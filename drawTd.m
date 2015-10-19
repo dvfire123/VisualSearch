@@ -22,7 +22,7 @@ function varargout = drawTd(varargin)
 
 % Edit the above text to modify the response to help drawTd
 
-% Last Modified by GUIDE v2.5 19-Oct-2015 12:00:35
+% Last Modified by GUIDE v2.5 19-Oct-2015 12:23:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -172,3 +172,9 @@ disCell{disNum} = dis;
 setappdata(0, 'targCell', disCell);
 setappdata(0, 'tcCell', disCVec);
 
+
+% --- Executes on button press in previewButton.
+function previewButton_Callback(hObject, eventdata, handles)
+% hObject    handle to previewButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
