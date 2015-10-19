@@ -22,7 +22,7 @@ function varargout = drawTd(varargin)
 
 % Edit the above text to modify the response to help drawTd
 
-% Last Modified by GUIDE v2.5 19-Oct-2015 12:23:46
+% Last Modified by GUIDE v2.5 19-Oct-2015 14:34:43
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -51,12 +51,16 @@ function drawTd_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to drawTd (see VARARGIN)
-global targCVec disCVec targCell disCell;
+global targCVec disCVec targCell disCell isTarg num;
 global dim;
+
 dim = 20;
 targCVec = {[0, 0, 0]};   %black by default
 disCVec = targCVec;
 set(handles.colourButton, 'UserData', targCVec{1});
+
+isTarg = 1;
+num = 1;
 
 xTick = linspace(0, 1, dim+1);
 yTick = xTick;
@@ -103,8 +107,8 @@ function td_ButtonDownFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global dim;
-targ = get(hObject, 'UserData');
-targColour = get(handles.colourButton, 'UserData');
+drawing = get(hObject, 'UserData');
+colour = get(handles.colourButton, 'UserData');
 
 hold on;
 delete(get(hObject, 'Children'));
@@ -115,29 +119,30 @@ pix = getPix(coordinates, dim);
 xpix = pix(1);
 ypix = pix(2);
 
-if targ(xpix, ypix) == 0
-    targ(xpix, ypix) = 1;
+if drawing(xpix, ypix) == 0
+    drawing(xpix, ypix) = 1;
 else
-    targ(xpix, ypix) = 0;
+    drawing(xpix, ypix) = 0;
 end
 
-imHandle = displayTd(targ, targColour, hObject);
+imHandle = displayTd(drawing, colour, hObject);
 set(imHandle, 'HitTest', 'off');
-saveTarget(handles, targ, targColour, 1);
+saveTarget(handles, drawing, colour, 1);
 
 % --- Executes on button press in colourButton.
 function colourButton_Callback(hObject, eventdata, handles)
 % hObject    handle to colourButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-c = uisetcolor;
+oldC = get(hObject, 'UserData');
+c = uisetcolor(oldC);   %if user press 'Cancel', c = oldC
 set(hObject, 'UserData', c);
 axes(handles.td);
-targ = get(handles.td, 'UserData');
+drawing = get(handles.td, 'UserData');
 
 hold on;
 delete(get(handles.td, 'Children'));
-imHandle = displayTd(targ, c, handles.td);
+imHandle = displayTd(drawing, c, handles.td);
 set(imHandle, 'HitTest', 'off');
 
 
@@ -158,6 +163,7 @@ delete(get(handles.td, 'Children'));
 function saveTarget(handles, targ, targColour, targNum)
 global targCVec targCell;
 set(handles.td, 'UserData', targ);
+set(handles.colourButton, 'UserData', targColour);
 targCVec{targNum} = targColour;
 targCell{targNum} = targ;
 setappdata(0, 'targCell', targCell);
@@ -167,14 +173,106 @@ setappdata(0, 'tcCell', targCVec);
 function saveDistractor(handles, dis, disColour, disNum)
 global disCVec disCell;
 set(handles.td, 'UserData', dis);
+set(handles.colourButton, 'UserData', disColour);
 disCVec{disNum} = disColour;
 disCell{disNum} = dis;
 setappdata(0, 'targCell', disCell);
 setappdata(0, 'tcCell', disCVec);
 
+function saveDrawing(handles, drawing, colour, num)
+global isTarg num;
+if isTarg == 1
+    saveTarget(handles, drawing, colour, num);
+else
+    saveDistractor(handles, drawing, colour, num);
+end
+
+%End Helper Functions
 
 % --- Executes on button press in previewButton.
 function previewButton_Callback(hObject, eventdata, handles)
 % hObject    handle to previewButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in saveButton.
+function saveButton_Callback(hObject, eventdata, handles)
+% hObject    handle to saveButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%sdt stands for signal detection target
+global dim;
+[FileName, pathname] = uiputfile('*.pic', 'Saving your drawing');
+
+%If the dialog box is cancelled
+if pathname == 0
+    return;
+end
+
+file = fullfile(pathname, FileName);
+
+fid = fopen(file, 'wt+');
+drawing = get(handles.td, 'UserData');
+colour = get(handles.colourButton, 'UserData');
+
+%The target is stored as a column vector of 0 and 1's
+for i = 1:dim
+   %10 is the height of the targ
+   for j = 1:dim
+       %10 is the width of the targ
+      fprintf(fid, '%d\n', drawing(i, j)); 
+   end
+end
+
+for i = 1:3
+   fprintf(fid, '%f\n', colour(i)); 
+end
+
+fclose(fid);
+
+% --- Executes on button press in loadButton.
+function loadButton_Callback(hObject, eventdata, handles)
+% hObject    handle to loadButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dim;
+global isTarg num;
+
+drawing = ones(dim, dim);
+[fileName, pathname] = uigetfile('*.pic', 'Please Select a .pic file');
+
+if pathname == 0
+    return;
+end
+
+delete(get(handles.td, 'Children'));
+axes(handles.td);
+hold on;
+
+file = fullfile(pathname, fileName);
+fid = fopen(file, 'r');
+
+B = fscanf(fid, '%f');
+
+Bindx = 0;
+
+for i = 1:dim
+    for j = 1:dim
+      Bindx = Bindx + 1;
+      drawing(i, j) = B(Bindx);
+    end
+end
+
+colour = B(Bindx+1:Bindx+3);
+
+if (isTarg == 1)
+    saveTarget(handles, drawing, colour, num);
+else
+    saveDistractor(handles, drawing, colour, num);
+end
+
+imHandle = displayTd(drawing, colour, handles.td);
+set(imHandle, 'HitTest', 'off');
+
+
