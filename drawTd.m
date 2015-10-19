@@ -74,7 +74,7 @@ setappdata(0, 'tcCell', targCVec);
 setappdata(0, 'dcCell', disCVec);
 
 %Store the current drawing
-set(handles.td, 'UserData', targCVec{1});
+set(handles.td, 'UserData', targCell{1});
 
 % Choose default command line output for drawTd
 handles.output = hObject;
@@ -102,11 +102,9 @@ function td_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to td (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global targCVec disCVec dim;
-targCell = getappdata(0, 'targCell');
-targ = targCell{1};
+global dim;
+targ = get(hObject, 'UserData');
 targColour = get(handles.colourButton, 'UserData');
-targCVec{1} = targColour;
 
 hold on;
 delete(get(hObject, 'Children'));
@@ -148,7 +146,12 @@ function clearButton_Callback(hObject, eventdata, handles)
 % hObject    handle to clearButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-hold on;
+global dim;
+axes(handles.td);
+targ = ones(dim, dim);
+set(handles.td, 'UserData', targ);
+delete(get(handles.td, 'Children'));
+
 
 %Helper Functions
 %Save the relevant target data
