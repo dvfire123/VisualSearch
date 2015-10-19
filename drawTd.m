@@ -22,7 +22,7 @@ function varargout = drawTd(varargin)
 
 % Edit the above text to modify the response to help drawTd
 
-% Last Modified by GUIDE v2.5 19-Oct-2015 10:20:10
+% Last Modified by GUIDE v2.5 19-Oct-2015 12:00:35
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -51,7 +51,7 @@ function drawTd_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to drawTd (see VARARGIN)
-global targCVec disCVec;
+global targCVec disCVec targCell disCell;
 global dim;
 dim = 20;
 targCVec = {[0, 0, 0]};   %black by default
@@ -123,14 +123,9 @@ else
     targ(xpix, ypix) = 0;
 end
 
-targCell{1} = targ;
-
 imHandle = displayTd(targ, targColour, hObject);
 set(imHandle, 'HitTest', 'off');
-
-set(hObject, 'UserData', targ);
-setappdata(0, 'targCell', targCell);
-setappdata(0, 'tcCell', targCVec);
+saveTarget(handles, targ, targColour, 1);
 
 % --- Executes on button press in colourButton.
 function colourButton_Callback(hObject, eventdata, handles)
@@ -146,3 +141,31 @@ hold on;
 delete(get(handles.td, 'Children'));
 imHandle = displayTd(targ, c, handles.td);
 set(imHandle, 'HitTest', 'off');
+
+
+% --- Executes on button press in clearButton.
+function clearButton_Callback(hObject, eventdata, handles)
+% hObject    handle to clearButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+hold on;
+
+%Helper Functions
+%Save the relevant target data
+function saveTarget(handles, targ, targColour, targNum)
+global targCVec targCell;
+set(handles.td, 'UserData', targ);
+targCVec{targNum} = targColour;
+targCell{targNum} = targ;
+setappdata(0, 'targCell', targCell);
+setappdata(0, 'tcCell', targCVec);
+
+%Save the relevant distractor data
+function saveDistractor(handles, dis, disColour, disNum)
+global disCVec disCell;
+set(handles.td, 'UserData', dis);
+disCVec{disNum} = disColour;
+disCell{disNum} = dis;
+setappdata(0, 'targCell', disCell);
+setappdata(0, 'tcCell', disCVec);
+
