@@ -51,6 +51,12 @@ function previewTd_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to previewTd (see VARARGIN)
+global targCVec disCVec targCell disCell;
+
+targCell = getappdata(0, 'targCell');    %could be more than one target
+disCell = getappdata(0, 'disCell');      %could be more than one distractor
+targCVec = getappdata(0, 'tcCell');
+disCVec = getappdata(0, 'dcCell');
 
 % Choose default command line output for previewTd
 handles.output = hObject;
