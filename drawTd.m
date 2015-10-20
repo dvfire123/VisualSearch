@@ -51,6 +51,8 @@ function drawTd_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to drawTd (see VARARGIN)
+set(beginTest, 'visible', 'off');
+
 global targCVec disCVec targCell disCell isTarg num;
 global dim;
 

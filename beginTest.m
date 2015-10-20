@@ -51,6 +51,40 @@ function beginTest_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to beginTest (see VARARGIN)
+global latestData dataFolder;
+
+[folder, ~, ~] = fileparts(mfilename('fullpath'));
+if isdeployed
+    folder = pwd;
+end
+userFolder = 'UserData';
+dataFolder = fullfile(folder, userFolder);
+
+latestDataFile = 'latest.txt';
+if ~exist(dataFolder, 'dir')
+   mkdir(dataFolder); 
+end
+
+latestData = fullfile(dataFolder, latestDataFile);
+if ~exist(latestData, 'file')
+   fid = fopen(latestData, 'wt+');
+   fclose(fid);
+end
+
+fid = fopen(latestData, 'r');
+latestFile = fgetl(fid);
+fclose(fid);
+
+if ischar(latestFile)
+    %There is latest file path
+    %Load it
+    A = loadUserData(latestFile);
+    
+    if ~isempty(A)
+        loadInputs(handles, A);
+    end
+end
+
 readInputs(handles);
 
 % Choose default command line output for beginTest
@@ -154,7 +188,7 @@ function p_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of p as text
 %        str2double(get(hObject,'String')) returns contents of p as a double
-p = str2double(get(handles.nCopies, 'string'));
+p = str2double(get(handles.p, 'string'));
 p = max(0, min(p, 1));
 set(handles.p, 'string', num2str(p));
 
@@ -255,6 +289,12 @@ function goButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+%First save the data
+saveButton_Callback(hObject, eventdata, handles);
+
+%Then proceed
+figure(drawTd);
+
 
 % --- Executes on button press in quitButton.
 function quitButton_Callback(hObject, eventdata, handles)
@@ -269,6 +309,14 @@ function saveButton_Callback(hObject, eventdata, handles)
 % hObject    handle to saveButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global inputs dataFolder latestData;
+readInputs(handles);
+[fileName, file]= saveInputsToFile(inputs, dataFolder);
+setappdata(gcbf, 'dataFileName', fileName);
+fid = fopen(latestData, 'wt+');
+fprintf(fid, '%s', file);
+fclose(fid);
+figure(saveDataConfirm);
 
 
 % --- Executes on button press in loadButton.
@@ -283,11 +331,11 @@ global inputs;
 
 fn = get(handles.fn, 'string');
 ln = get(handles.ln, 'string');
-p = str2double(get(handles.p, 'string'));
-nCopies = str2double(get(handles.nCopies, 'string'));
-dt = str2double(get(handles.dt, 'string'));
-wt = str2double(get(handles.wt, 'string'));
-numTrials = str2double(get(handles.numTrials, 'string'));
+p = get(handles.p, 'string');
+nCopies = get(handles.nCopies, 'string');
+dt = get(handles.dt, 'string');
+wt = get(handles.wt, 'string');
+numTrials = get(handles.numTrials, 'string');
 
 inputs{1} = fn;
 inputs{2} = ln;
@@ -298,3 +346,12 @@ inputs{6} = wt;
 inputs{7} = numTrials;
 
 setappdata(gcf, 'inputs', inputs);
+
+function loadInputs(handles, inputs)
+set(handles.fn, 'string', inputs{1});
+set(handles.ln, 'string', inputs{2});
+set(handles.p, 'string', inputs{3});
+set(handles.nCopies, 'string', inputs{4});
+set(handles.dt, 'string', inputs{5});
+set(handles.wt, 'string', inputs{6});
+set(handles.numTrials, 'string', inputs{7});
