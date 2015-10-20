@@ -22,7 +22,7 @@ function varargout = drawTd(varargin)
 
 % Edit the above text to modify the response to help drawTd
 
-% Last Modified by GUIDE v2.5 19-Oct-2015 14:34:43
+% Last Modified by GUIDE v2.5 19-Oct-2015 18:12:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -78,7 +78,7 @@ setappdata(0, 'tcCell', targCVec);
 setappdata(0, 'dcCell', disCVec);
 
 %Store the current drawing
-set(handles.td, 'UserData', targCell{1});
+set(handles.td, 'UserData', targCell{num});
 
 % Choose default command line output for drawTd
 handles.output = hObject;
@@ -127,7 +127,7 @@ end
 
 imHandle = displayTd(drawing, colour, hObject);
 set(imHandle, 'HitTest', 'off');
-saveTarget(handles, drawing, colour, 1);
+saveDrawing(handles, drawing, colour);
 
 % --- Executes on button press in colourButton.
 function colourButton_Callback(hObject, eventdata, handles)
@@ -179,14 +179,13 @@ disCell{disNum} = dis;
 setappdata(0, 'targCell', disCell);
 setappdata(0, 'tcCell', disCVec);
 
-function saveDrawing(handles, drawing, colour, num)
+function saveDrawing(handles, drawing, colour)
 global isTarg num;
 if isTarg == 1
     saveTarget(handles, drawing, colour, num);
 else
     saveDistractor(handles, drawing, colour, num);
 end
-
 %End Helper Functions
 
 % --- Executes on button press in previewButton.
@@ -194,6 +193,7 @@ function previewButton_Callback(hObject, eventdata, handles)
 % hObject    handle to previewButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+figure(previewTd);
 
 
 % --- Executes on button press in saveButton.
@@ -237,7 +237,6 @@ function loadButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global dim;
-global isTarg num;
 
 drawing = ones(dim, dim);
 [fileName, pathname] = uigetfile('*.pic', 'Please Select a .pic file');
@@ -265,14 +264,7 @@ for i = 1:dim
 end
 
 colour = B(Bindx+1:Bindx+3);
-
-if (isTarg == 1)
-    saveTarget(handles, drawing, colour, num);
-else
-    saveDistractor(handles, drawing, colour, num);
-end
+saveDrawing(handles, drawing, colour);
 
 imHandle = displayTd(drawing, colour, handles.td);
 set(imHandle, 'HitTest', 'off');
-
-
