@@ -22,7 +22,7 @@ function varargout = beginTest(varargin)
 
 % Edit the above text to modify the response to help beginTest
 
-% Last Modified by GUIDE v2.5 20-Oct-2015 15:40:39
+% Last Modified by GUIDE v2.5 20-Oct-2015 18:30:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -51,6 +51,7 @@ function beginTest_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to beginTest (see VARARGIN)
+readInputs(handles);
 
 % Choose default command line output for beginTest
 handles.output = hObject;
@@ -119,7 +120,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function nCopies_Callback(hObject, eventdata, handles)
 % hObject    handle to nCopies (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -127,6 +127,10 @@ function nCopies_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of nCopies as text
 %        str2double(get(hObject,'String')) returns contents of nCopies as a double
+MAX_COPIES = 10;
+nCopies = str2double(get(handles.nCopies, 'string'));
+nCopies = max(0, min(nCopies, MAX_COPIES));
+set(handles.nCopies, 'string', num2str(nCopies));
 
 
 % --- Executes during object creation, after setting all properties.
@@ -143,18 +147,21 @@ end
 
 
 
-function edit4_Callback(hObject, eventdata, handles)
-% hObject    handle to edit4 (see GCBO)
+function p_Callback(hObject, eventdata, handles)
+% hObject    handle to p (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit4 as text
-%        str2double(get(hObject,'String')) returns contents of edit4 as a double
+% Hints: get(hObject,'String') returns contents of p as text
+%        str2double(get(hObject,'String')) returns contents of p as a double
+p = str2double(get(handles.nCopies, 'string'));
+p = max(0, min(p, 1));
+set(handles.p, 'string', num2str(p));
 
 
 % --- Executes during object creation, after setting all properties.
-function edit4_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit4 (see GCBO)
+function p_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to p (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -234,29 +241,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
-function edit8_Callback(hObject, eventdata, handles)
-% hObject    handle to nCopies (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of nCopies as text
-%        str2double(get(hObject,'String')) returns contents of nCopies as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit8_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to nCopies (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
 % --- Executes on button press in creditsButton.
 function creditsButton_Callback(hObject, eventdata, handles)
 % hObject    handle to creditsButton (see GCBO)
@@ -292,3 +276,25 @@ function loadButton_Callback(hObject, eventdata, handles)
 % hObject    handle to loadButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+%%-----Helpers-----%%
+function readInputs(handles)
+global inputs;
+
+fn = get(handles.fn, 'string');
+ln = get(handles.ln, 'string');
+p = str2double(get(handles.p, 'string'));
+nCopies = str2double(get(handles.nCopies, 'string'));
+dt = str2double(get(handles.dt, 'string'));
+wt = str2double(get(handles.wt, 'string'));
+numTrials = str2double(get(handles.numTrials, 'string'));
+
+inputs{1} = fn;
+inputs{2} = ln;
+inputs{3} = p;
+inputs{4} = nCopies;
+inputs{5} = dt;
+inputs{6} = wt;
+inputs{7} = numTrials;
+
+setappdata(gcf, 'inputs', inputs);
