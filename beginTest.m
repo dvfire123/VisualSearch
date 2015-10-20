@@ -309,13 +309,11 @@ function saveButton_Callback(hObject, eventdata, handles)
 % hObject    handle to saveButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global inputs dataFolder latestData;
+global inputs dataFolder;
 readInputs(handles);
 [fileName, file]= saveInputsToFile(inputs, dataFolder);
 setappdata(gcbf, 'dataFileName', fileName);
-fid = fopen(latestData, 'wt+');
-fprintf(fid, '%s', file);
-fclose(fid);
+updateLatestFile(file);
 figure(saveDataConfirm);
 
 
@@ -324,6 +322,17 @@ function loadButton_Callback(hObject, eventdata, handles)
 % hObject    handle to loadButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+[fileName, pathName] = uigetfile('*.vsdf', 'Select your data input (.vsdf) file');
+if fileName == 0
+    return;
+end
+
+file = fullfile(pathName, fileName);
+
+A = loadUserData(file);
+loadInputs(handles, A);
+updateLatestFile(file);
+
 
 %%-----Helpers-----%%
 function readInputs(handles)
@@ -355,3 +364,10 @@ set(handles.nCopies, 'string', inputs{4});
 set(handles.dt, 'string', inputs{5});
 set(handles.wt, 'string', inputs{6});
 set(handles.numTrials, 'string', inputs{7});
+
+function updateLatestFile(file)
+global latestData;
+fid = fopen(latestData, 'wt+');
+fprintf(fid, '%s', file);
+fclose(fid);
+
