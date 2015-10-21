@@ -22,7 +22,7 @@ function varargout = drawTd(varargin)
 
 % Edit the above text to modify the response to help drawTd
 
-% Last Modified by GUIDE v2.5 19-Oct-2015 18:12:09
+% Last Modified by GUIDE v2.5 20-Oct-2015 20:05:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -43,18 +43,13 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-
-% --- Executes just before drawTd is made visible.
-function drawTd_OpeningFcn(hObject, eventdata, handles, varargin)
-% This function has no output args, see OutputFcn.
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to drawTd (see VARARGIN)
+function initDrawBox(handles)
+inputs = getappdata(beginTest, 'inputs');
 set(beginTest, 'visible', 'off');
 
 global targCVec disCVec targCell disCell isTarg num;
-global dim;
+global dim NT ND;
+global nCopies
 
 dim = 20;
 targCVec = {[0, 0, 0]};   %black by default
@@ -62,7 +57,13 @@ disCVec = targCVec;
 set(handles.colourButton, 'UserData', targCVec{1});
 
 isTarg = 1;
+setappdata(gcf, 'isTarg', isTarg);
+
 num = 1;
+NT = 2;
+ND = 10;
+
+nCopies = inputs{4};
 
 xTick = linspace(0, 1, dim+1);
 yTick = xTick;
@@ -81,6 +82,27 @@ setappdata(0, 'dcCell', disCVec);
 
 %Store the current drawing
 set(handles.td, 'UserData', targCell{num});
+
+% --- Executes just before drawTd is made visible.
+function drawTd_OpeningFcn(hObject, eventdata, handles, varargin)
+% This function has no output args, see OutputFcn.
+% hObject    handle to figure
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% varargin   command line arguments to drawTd (see VARARGIN)
+global num dim;
+another = getappdata(0, 'another');
+
+if isempty(another)
+    initDrawBox(handles);
+else
+    disp('Got here');
+    axes(handles.td);
+    drawing = ones(dim, dim);
+    set(handles.td, 'UserData', drawing);
+    delete(get(handles.td, 'Children'));
+    num = num + 1;
+end
 
 % Choose default command line output for drawTd
 handles.output = hObject;
@@ -155,8 +177,8 @@ function clearButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global dim;
 axes(handles.td);
-targ = ones(dim, dim);
-set(handles.td, 'UserData', targ);
+drawing = ones(dim, dim);
+set(handles.td, 'UserData', drawing);
 delete(get(handles.td, 'Children'));
 
 
@@ -270,3 +292,21 @@ saveDrawing(handles, drawing, colour);
 
 imHandle = displayTd(drawing, colour, handles.td);
 set(imHandle, 'HitTest', 'off');
+
+
+% --- Executes on button press in doneButton.
+function doneButton_Callback(hObject, eventdata, handles)
+% hObject    handle to doneButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global targCVec disCVec targCell disCell isTarg num nCopies NT ND;
+drawing = get(handles.td, 'UserData');
+colour = get(handles.colourButton, 'UserData');
+saveDrawing(handles, drawing, colour);
+if (isTarg == 1 && num < NT) || (isTarg == 0 && num < ND)
+    figure(drawNextBox);
+else
+    %Temp
+    close;
+    set(beginTest, 'visible', 'on');
+end
