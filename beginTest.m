@@ -22,7 +22,7 @@ function varargout = beginTest(varargin)
 
 % Edit the above text to modify the response to help beginTest
 
-% Last Modified by GUIDE v2.5 20-Oct-2015 18:30:31
+% Last Modified by GUIDE v2.5 21-Oct-2015 13:22:12
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -294,7 +294,8 @@ function goButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 %First save the data
-saveButton_Callback(hObject, eventdata, handles);
+saveDataToFile(hObject, eventdata, handles);
+figure(saveDataConfirm);
 
 %Then proceed
 figure(drawTd);
@@ -313,11 +314,7 @@ function saveButton_Callback(hObject, eventdata, handles)
 % hObject    handle to saveButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global inputs dataFolder;
-readInputs(handles);
-[fileName, file]= saveInputsToFile(inputs, dataFolder);
-setappdata(gcbf, 'dataFileName', fileName);
-updateLatestFile(file);
+saveDataToFile(hObject, eventdata, handles);
 figure(saveDataConfirm);
 
 
@@ -375,3 +372,9 @@ fid = fopen(latestData, 'wt+');
 fprintf(fid, '%s', file);
 fclose(fid);
 
+function saveDataToFile(hObject, eventdata, handles)
+global inputs dataFolder;
+readInputs(handles);
+[fileName, file]= saveInputsToFile(inputs, dataFolder);
+setappdata(gcbf, 'dataFileName', fileName);
+updateLatestFile(file);
