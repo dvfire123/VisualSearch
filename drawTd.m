@@ -95,21 +95,14 @@ another = getappdata(0, 'another');
 
 if isempty(another)
     initDrawBox(handles);
-else
+elseif another == 1
     axes(handles.td);
     drawing = ones(dim, dim);
     set(handles.td, 'UserData', drawing);
     delete(get(handles.td, 'Children'));
     num = num + 1;
-    
-    if num >= NT
-       %We have reached the limit of drawing the target
-       %commencing drawing of distractor now
-       isTarg = 0; 
-       setappdata(0, 'isTarg', isTarg);
-       num = 1;
-       set(handles.drawPrompt, 'string', 'Draw Your Distractor Below:');
-    end
+else
+    changeToDis(hObject, eventdata, handles);
 end
 
 % Choose default command line output for drawTd
@@ -313,8 +306,20 @@ colour = get(handles.colourButton, 'UserData');
 saveDrawing(handles, drawing, colour);
 if (isTarg == 1 && num < NT) || (isTarg == 0 && num < ND)
     figure(drawNextBox);
+elseif isTarg == 1 && num >= NT
+   %We have reached the limit of drawing the target
+   %commencing drawing of distractor now
+   changeToDis(hObject, eventdata, handles);
 else
     %Temp
     close;
     set(beginTest, 'visible', 'on');
 end
+
+function changeToDis(hObject, eventdata, handles)
+global isTarg num;
+clearButton_Callback(hObject, eventdata, handles);
+isTarg = 0; 
+setappdata(0, 'isTarg', isTarg);
+num = 1;
+set(handles.drawPrompt, 'string', 'Draw Your Distractor Below:');
