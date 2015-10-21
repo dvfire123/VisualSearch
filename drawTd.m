@@ -319,7 +319,7 @@ elseif isTarg == 1 && num >= NT
 else
     %Temp
     close;
-    set(beginTest, 'visible', 'on');
+    figure(actualTest);
 end
 
 function changeToDis(hObject, eventdata, handles)

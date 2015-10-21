@@ -108,5 +108,5 @@ if isTarg == 1
 else
     close;
     close(drawTd);
-    set(beginTest, 'visible', 'on');
+    figure(actualTest);
 end
