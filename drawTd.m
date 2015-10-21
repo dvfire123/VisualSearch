@@ -204,8 +204,8 @@ set(handles.td, 'UserData', dis);
 set(handles.colourButton, 'UserData', disColour);
 disCVec{disNum} = disColour;
 disCell{disNum} = dis;
-setappdata(0, 'targCell', disCell);
-setappdata(0, 'tcCell', disCVec);
+setappdata(0, 'disCell', disCell);
+setappdata(0, 'dcCell', disCVec);
 
 function saveDrawing(handles, drawing, colour)
 global isTarg num;
