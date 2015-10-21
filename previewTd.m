@@ -22,7 +22,7 @@ function varargout = previewTd(varargin)
 
 % Edit the above text to modify the response to help previewTd
 
-% Last Modified by GUIDE v2.5 19-Oct-2015 16:43:28
+% Last Modified by GUIDE v2.5 21-Oct-2015 13:59:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -92,3 +92,14 @@ function showButton_Callback(hObject, eventdata, handles)
 % hObject    handle to showButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in testButton.
+function testButton_Callback(hObject, eventdata, handles)
+% hObject    handle to testButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global targCVec targCell;
+targ = targCell{1};
+colour = targCVec{1};
+preProcessDrawing(targ, colour, [0, 0, 1], 10); %Blue background
