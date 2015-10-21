@@ -18,7 +18,6 @@ function imHandle = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
     
     %RETURNS: handle to the stimulus image
     MAX_TRIES = 1000;
-    tries = 0;
     
     [~, numTarg] = size(targCell);
     [~, numDis] = size(disCell);

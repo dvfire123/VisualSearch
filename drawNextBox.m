@@ -100,7 +100,6 @@ function noButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global isTarg;
-global another;
 
 if isTarg == 1
     setappdata(0, 'another', 0);

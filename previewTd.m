@@ -22,7 +22,7 @@ function varargout = previewTd(varargin)
 
 % Edit the above text to modify the response to help previewTd
 
-% Last Modified by GUIDE v2.5 21-Oct-2015 14:17:56
+% Last Modified by GUIDE v2.5 21-Oct-2015 16:40:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -107,3 +107,21 @@ function showButton_Callback(hObject, eventdata, handles)
 % hObject    handle to showButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global targCVec disCVec targCell disCell;
+global sHeight sWidth minDist bgColour dim nCopies p;
+delete(get(handles.previewStim, 'Children'));
+createStimulus(sHeight, sWidth, dim, targCell, disCell,...
+    targCVec, disCVec, nCopies, p, minDist, bgColour, handles.previewStim)
+
+
+% --- Executes on button press in startoverButton.
+function startoverButton_Callback(hObject, eventdata, handles)
+% hObject    handle to startoverButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+another = getappdata(0, 'another');
+if ~isempty(another)
+    rmappdata(0, 'another');
+end
+close;
+figure(drawTd);

@@ -94,6 +94,9 @@ global num dim NT isTarg;
 another = getappdata(0, 'another');
 
 if isempty(another)
+    if ~isempty(get(handles.td, 'Children'))
+        delete(get(handles.td, 'Children'));
+    end
     initDrawBox(handles);
 elseif another == 1
     axes(handles.td);
