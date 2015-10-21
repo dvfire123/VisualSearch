@@ -51,7 +51,7 @@ function drawNextBox_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to drawNextBox (see VARARGIN)
-isTarg = getappdata(drawTd, 'isTarg');
+isTarg = getappdata(0, 'isTarg');
 if isTarg == 1
     next = 'target';
 else

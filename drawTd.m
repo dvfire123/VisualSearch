@@ -57,7 +57,7 @@ disCVec = targCVec;
 set(handles.colourButton, 'UserData', targCVec{1});
 
 isTarg = 1;
-setappdata(gcf, 'isTarg', isTarg);
+setappdata(0, 'isTarg', isTarg);
 
 num = 1;
 NT = 2;
@@ -90,18 +90,26 @@ function drawTd_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to drawTd (see VARARGIN)
-global num dim;
+global num dim NT isTarg;
 another = getappdata(0, 'another');
 
 if isempty(another)
     initDrawBox(handles);
 else
-    disp('Got here');
     axes(handles.td);
     drawing = ones(dim, dim);
     set(handles.td, 'UserData', drawing);
     delete(get(handles.td, 'Children'));
     num = num + 1;
+    
+    if num >= NT
+       %We have reached the limit of drawing the target
+       %commencing drawing of distractor now
+       isTarg = 0; 
+       setappdata(0, 'isTarg', isTarg);
+       num = 1;
+       set(handles.drawPrompt, 'string', 'Draw Your Distractor Below:');
+    end
 end
 
 % Choose default command line output for drawTd

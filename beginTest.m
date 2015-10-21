@@ -53,6 +53,10 @@ function beginTest_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to beginTest (see VARARGIN)
 global latestData dataFolder;
 
+if ~isempty(getappdata(0, 'another'))
+    rmappdata(0, 'another');    %remove data asking user to draw another drawing
+end
+
 [folder, ~, ~] = fileparts(mfilename('fullpath'));
 if isdeployed
     folder = pwd;
