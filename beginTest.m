@@ -43,6 +43,27 @@ else
 end
 % End initialization code - DO NOT EDIT
 
+%Helper to clear all the app data that belong to the root handle
+function clearAppData()
+if ~isempty(getappdata(0, 'another'))
+    rmappdata(0, 'another');    %remove data asking user to draw another drawing
+end
+if ~isempty(getappdata(0, 'targCell'))
+    rmappdata(0, 'targCell');    %remove data asking user to draw another drawing
+end
+if ~isempty(getappdata(0, 'disCell'))
+    rmappdata(0, 'disCell');    %remove data asking user to draw another drawing
+end
+if ~isempty(getappdata(0, 'tcCell'))
+    rmappdata(0, 'tcCell');    %remove data asking user to draw another drawing
+end
+if ~isempty(getappdata(0, 'dcCell'))
+    rmappdata(0, 'dcCell');    %remove data asking user to draw another drawing
+end
+if ~isempty(getappdata(0, 'isTarg'))
+    rmappdata(0, 'isTarg');    %remove data asking user to draw another drawing
+end
+
 
 % --- Executes just before beginTest is made visible.
 function beginTest_OpeningFcn(hObject, eventdata, handles, varargin)
@@ -51,11 +72,9 @@ function beginTest_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to beginTest (see VARARGIN)
-global latestData dataFolder;
+clearAppData();
 
-if ~isempty(getappdata(0, 'another'))
-    rmappdata(0, 'another');    %remove data asking user to draw another drawing
-end
+global latestData dataFolder;
 
 [folder, ~, ~] = fileparts(mfilename('fullpath'));
 if isdeployed

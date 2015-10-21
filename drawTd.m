@@ -102,6 +102,7 @@ elseif another == 1
     delete(get(handles.td, 'Children'));
     num = num + 1;
 else
+    %Target drawing done.  Now let the users design the distractors
     changeToDis(hObject, eventdata, handles);
 end
 
@@ -170,18 +171,20 @@ delete(get(handles.td, 'Children'));
 imHandle = displayTd(drawing, c, handles.td);
 set(imHandle, 'HitTest', 'off');
 
-
-% --- Executes on button press in clearButton.
-function clearButton_Callback(hObject, eventdata, handles)
-% hObject    handle to clearButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+%Helper to clear
+function clearDrawing(handles)
 global dim;
 axes(handles.td);
 drawing = ones(dim, dim);
 set(handles.td, 'UserData', drawing);
 delete(get(handles.td, 'Children'));
 
+% --- Executes on button press in clearButton.
+function clearButton_Callback(hObject, eventdata, handles)
+% hObject    handle to clearButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+clearDrawing(handles);
 
 %Helper Functions
 %Save the relevant target data
@@ -318,7 +321,7 @@ end
 
 function changeToDis(hObject, eventdata, handles)
 global isTarg num;
-clearButton_Callback(hObject, eventdata, handles);
+clearDrawing(handles);
 isTarg = 0; 
 setappdata(0, 'isTarg', isTarg);
 num = 1;
