@@ -17,14 +17,16 @@ function imHandle = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
     %axHandle: the axes handle in which to place the stimulus
     
     %RETURNS: handle to the stimulus image
+    MAX_TRIES = 1000;
+    tries = 0;
     
     [~, numTarg] = size(targCell);
     [~, numDis] = size(disCell);
     numPics = numTarg + numDis*nCopies;
     frameSize = dim + 2*minDist;
-    minSize = frameSize*numPics;
+    minSize = frameSize*frameSize*numPics;
     
-    if minSize > min(sHeight, sWidth)
+    if minSize > sHeight*sWidth
        imHandle = 0;
        disp('Drawings cannot fit onto the stimulus!\n');
        return;
@@ -52,6 +54,8 @@ function imHandle = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
        
        if rand < p
           %display the target
+          tries = 0;
+          found = 1;
           frame = preProcessDrawing(targ, c, bgColour, minDist);
           insertRangeHeight = sHeight - frameSize + 1;
           insertRangeWidth = sWidth - frameSize + 1;
@@ -59,17 +63,24 @@ function imHandle = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
           left = ceil(rand*insertRangeWidth);
           
           while getFitStatus(memchart, frame, top, left) == 0
+             tries = tries + 1;
+             if tries >= MAX_TRIES
+                 found = 0;
+                 break;
+             end
              %Selected spot no good; keep searching
              top = ceil(rand*insertRangeHeight);
              left = ceil(rand*insertRangeWidth);
           end
           
-          %We found a good place to place our target:
-          dataOut = insertDrawing(frame, canvas, top, left, memchart);
-          
-          %Update pic data:
-          canvas = dataOut{1};
-          memchart = dataOut{2};
+          if found == 1
+              %We found a good place to place our target:
+              dataOut = insertDrawing(frame, canvas, top, left, memchart);
+
+              %Update pic data:
+              canvas = dataOut{1};
+              memchart = dataOut{2};
+          end
        end
     end
     
@@ -89,6 +100,8 @@ function imHandle = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
             end
             
             %Then add the distractor to the canvas
+            tries = 0;
+            found = 1;
             frame = preProcessDrawing(dis, c, bgColour, minDist);
             insertRangeHeight = sHeight - frameSize + 1;
             insertRangeWidth = sWidth - frameSize + 1;
@@ -96,17 +109,25 @@ function imHandle = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
             left = ceil(rand*insertRangeWidth);
 
             while getFitStatus(memchart, frame, top, left) == 0
-             %Selected spot no good; keep searching
-             top = ceil(rand*insertRangeHeight);
-             left = ceil(rand*insertRangeWidth);
+                 tries = tries + 1;
+                 if tries >= MAX_TRIES
+                     found = 0;
+                     break;
+                 end
+                 
+                 %Selected spot no good; keep searching
+                 top = ceil(rand*insertRangeHeight);
+                 left = ceil(rand*insertRangeWidth);
             end
 
-            %We found a good place to place our target:
-            dataOut = insertDrawing(frame, canvas, top, left, memchart);
+            if found == 1
+                %We found a good place to place our target:
+                dataOut = insertDrawing(frame, canvas, top, left, memchart);
 
-            %Update pic data:
-            canvas = dataOut{1};
-            memchart = dataOut{2};
+                %Update pic data:
+                canvas = dataOut{1};
+                memchart = dataOut{2};
+            end
         end
     end
     

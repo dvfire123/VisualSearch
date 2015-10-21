@@ -161,7 +161,7 @@ function nCopies_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of nCopies as text
 %        str2double(get(hObject,'String')) returns contents of nCopies as a double
-MAX_COPIES = 3;
+MAX_COPIES = 10;
 nCopies = str2double(get(handles.nCopies, 'string'));
 nCopies = max(0, min(nCopies, MAX_COPIES));
 set(handles.nCopies, 'string', num2str(nCopies));
