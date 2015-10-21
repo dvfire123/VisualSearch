@@ -1,4 +1,4 @@
-function imHandle = preProcessDrawing(drawing, colour, bgColour, minDist)
+function frame = preProcessDrawing(drawing, colour, bgColour, minDist)
     %Preprocess the drawing: place the drawing in the center of frame
     %of dimension (size of drawing) + minDist x minDist
     
@@ -27,8 +27,4 @@ function imHandle = preProcessDrawing(drawing, colour, bgColour, minDist)
             end
         end
     end
-    
-    %Test
-    figure;
-    imHandle = image(frame);
 end

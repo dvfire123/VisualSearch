@@ -51,12 +51,27 @@ function previewTd_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to previewTd (see VARARGIN)
-global targCVec disCVec targCell disCell;
+global targCVec disCVec targCell disCell inputs;
+global sHeight sWidth minDist bgColour dim nCopies p;
+dim = 20;
+sHeight = 400;
+sWidth = 600;
+bgColour = [1 1 1]; %white
+minDist = ceil(dim/4);
 
+inputs = getappdata(beginTest, 'inputs');
+set(beginTest, 'visible', 'off');
 targCell = getappdata(0, 'targCell');    %could be more than one target
 disCell = getappdata(0, 'disCell');      %could be more than one distractor
 targCVec = getappdata(0, 'tcCell');
 disCVec = getappdata(0, 'dcCell');
+
+nCopies = str2double(inputs{4});
+p = 1;  %So both of the targets will show in the preview
+
+%Display a stimulus
+createStimulus(sHeight, sWidth, dim, targCell, disCell,...
+    targCVec, disCVec, nCopies, p, minDist, bgColour, handles.previewStim)
 
 % Choose default command line output for previewTd
 handles.output = hObject;
@@ -92,14 +107,3 @@ function showButton_Callback(hObject, eventdata, handles)
 % hObject    handle to showButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in testButton.
-function testButton_Callback(hObject, eventdata, handles)
-% hObject    handle to testButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-global targCVec targCell;
-targ = targCell{1};
-colour = targCVec{1};
-preProcessDrawing(targ, colour, [0, 0, 1], 10); %Blue background

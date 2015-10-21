@@ -42,6 +42,7 @@ else
     gui_mainfcn(gui_State, varargin{:});
 end
 % End initialization code - DO NOT EDIT
+global another;
 
 
 % --- Executes just before drawNextBox is made visible.
@@ -99,6 +100,8 @@ function noButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global isTarg;
+global another;
+
 if isTarg == 1
     setappdata(0, 'another', 0);
     close;

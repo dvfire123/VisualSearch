@@ -22,7 +22,7 @@ function varargout = beginTest(varargin)
 
 % Edit the above text to modify the response to help beginTest
 
-% Last Modified by GUIDE v2.5 21-Oct-2015 13:22:12
+% Last Modified by GUIDE v2.5 21-Oct-2015 15:38:02
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -43,27 +43,6 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-%Helper to clear all the app data that belong to the root handle
-function clearAppData()
-if ~isempty(getappdata(0, 'another'))
-    rmappdata(0, 'another');    %remove data asking user to draw another drawing
-end
-if ~isempty(getappdata(0, 'targCell'))
-    rmappdata(0, 'targCell');    %remove data asking user to draw another drawing
-end
-if ~isempty(getappdata(0, 'disCell'))
-    rmappdata(0, 'disCell');    %remove data asking user to draw another drawing
-end
-if ~isempty(getappdata(0, 'tcCell'))
-    rmappdata(0, 'tcCell');    %remove data asking user to draw another drawing
-end
-if ~isempty(getappdata(0, 'dcCell'))
-    rmappdata(0, 'dcCell');    %remove data asking user to draw another drawing
-end
-if ~isempty(getappdata(0, 'isTarg'))
-    rmappdata(0, 'isTarg');    %remove data asking user to draw another drawing
-end
-
 
 % --- Executes just before beginTest is made visible.
 function beginTest_OpeningFcn(hObject, eventdata, handles, varargin)
@@ -72,8 +51,6 @@ function beginTest_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to beginTest (see VARARGIN)
-clearAppData();
-
 global latestData dataFolder;
 
 [folder, ~, ~] = fileparts(mfilename('fullpath'));
@@ -184,7 +161,7 @@ function nCopies_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of nCopies as text
 %        str2double(get(hObject,'String')) returns contents of nCopies as a double
-MAX_COPIES = 10;
+MAX_COPIES = 3;
 nCopies = str2double(get(handles.nCopies, 'string'));
 nCopies = max(0, min(nCopies, MAX_COPIES));
 set(handles.nCopies, 'string', num2str(nCopies));
@@ -201,8 +178,6 @@ function nCopies_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
 
 function p_Callback(hObject, eventdata, handles)
 % hObject    handle to p (see GCBO)
@@ -313,6 +288,7 @@ function goButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 %First save the data
+clearAnother();
 saveDataToFile(hObject, eventdata, handles);
 figure(saveDataConfirm);
 
@@ -325,6 +301,7 @@ function quitButton_Callback(hObject, eventdata, handles)
 % hObject    handle to quitButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+clearAnother();
 close;
 
 
@@ -397,3 +374,9 @@ readInputs(handles);
 [fileName, file]= saveInputsToFile(inputs, dataFolder);
 setappdata(gcbf, 'dataFileName', fileName);
 updateLatestFile(file);
+
+function clearAnother()
+another = getappdata(0, 'another');
+if ~isempty(another)
+    rmappdata(0, 'another');
+end

@@ -326,3 +326,4 @@ isTarg = 0;
 setappdata(0, 'isTarg', isTarg);
 num = 1;
 set(handles.drawPrompt, 'string', 'Draw Your Distractor Below:');
+set(handles.previewButton, 'enable', 'on'); %now one can preview the stimulus
