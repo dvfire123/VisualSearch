@@ -160,6 +160,7 @@ set(dispTimer, 'StopFcn', {@dispTimesUp, handles});
 timeLeft = dispTime;
 
 %begin the actual test
+drawCross(handles);
 start(waitTimer);
 
 % UIWAIT makes ActualTest wait for user response (see UIRESUME)
@@ -211,12 +212,9 @@ stop(dispTimer);
 timeSpent = toc;
 totTime = totTime + timeSpent;
 
-axes(handles.stim);
-delete(get(handles.stim, 'Children'));
-
 %log response:
 testNum = get(handles.testCountLabel, 'UserData');
-res = get(gcbf, 'UserData');
+res = get(gcf, 'UserData');
 corrStr = 'Incorrect';
 
 resStr = 'No';
@@ -253,7 +251,7 @@ if testNum > numTrials
    fprintf(fid, '----------\n');
    fclose(fid);
    
-   close(gcbf);
+   close;
    figure(beginTest);
 else
     s = sprintf('Test: %d/%d', testNum, numTrials);
@@ -265,9 +263,15 @@ end
 %draw blank stimulus
 function drawBlankStim(handles)
 global sHeight sWidth;
-axes(handles.stim);
-delete(get(handles.stim, 'Children'));
 blankStimulus(sHeight, sWidth, handles.stim);
+
+%draw cover (with cross in the middle)
+function drawCross(handles)
+global sHeight sWidth;
+SHRINK_FACTOR = 5;
+height = sHeight/SHRINK_FACTOR;
+width = sWidth/SHRINK_FACTOR;
+crossStimulus(height, width, handles.stim);
 
 %---Timer Callbacks---
 %wait timer callbacks
@@ -287,12 +291,11 @@ global sHeight sWidth minDist bgColour dim nCopies prob;
 set(handles.yesButton, 'Enable', 'on');
 set(handles.noButton, 'Enable', 'on');
 
-%TODO: draw the stimulus here
-axes(handles.stim);
-delete(get(handles.stim, 'Children'));
-res = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
-   targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim);
-set(gcbf, 'UserData', res);
+%delete(get(handles.stim, 'Children'));
+%res = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
+%   targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim);
+res = 1;
+set(gcf, 'UserData', res);
 
 restartDispTimer(handles)
 tic;
@@ -302,6 +305,7 @@ global waitTimer waitTime waitTimeLeft;
 set(handles.yesButton, 'Enable', 'off');
 set(handles.noButton, 'Enable', 'off');
 waitTimeLeft = waitTime;
+drawCross(handles);
 start(waitTimer);
 
 %Display timer callbacks
