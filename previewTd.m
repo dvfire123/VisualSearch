@@ -22,7 +22,7 @@ function varargout = previewTd(varargin)
 
 % Edit the above text to modify the response to help previewTd
 
-% Last Modified by GUIDE v2.5 21-Oct-2015 16:56:44
+% Last Modified by GUIDE v2.5 22-Oct-2015 14:14:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -94,9 +94,9 @@ function varargout = previewTd_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 
-% --- Executes on button press in okayButton.
-function okayButton_Callback(hObject, eventdata, handles)
-% hObject    handle to okayButton (see GCBO)
+% --- Executes on button press in closeButton.
+function closeButton_Callback(hObject, eventdata, handles)
+% hObject    handle to closeButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 close;
