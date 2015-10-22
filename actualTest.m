@@ -291,7 +291,7 @@ set(handles.noButton, 'Enable', 'on');
 axes(handles.stim);
 delete(get(handles.stim, 'Children'));
 res = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
-    targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim);
+   targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim);
 set(gcbf, 'UserData', res);
 
 restartDispTimer(handles)
