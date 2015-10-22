@@ -22,7 +22,7 @@ function varargout = actualTest(varargin)
 
 % Edit the above text to modify the response to help actualTest
 
-% Last Modified by GUIDE v2.5 21-Oct-2015 17:09:34
+% Last Modified by GUIDE v2.5 22-Oct-2015 00:27:12
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -53,7 +53,7 @@ function actualTest_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to actualTest (see VARARGIN)
 global targCVec disCVec targCell disCell dispTime waitTime;
 global sHeight sWidth minDist bgColour dim nCopies prob numTrials;
-global waitTimer dispTimer timeLeft;
+global waitTimer dispTimer timeLeft waitTimeLeft;
 global outFile correct totTime;
 
 dim = 20;
@@ -81,6 +81,8 @@ totTime = 0;
 
 %plot the targets
 [~, numTarg] = size(targCell);
+[~, numDis] = size(disCell);
+
 for num = 1:numTarg
    targ = flipdim(targCell{num}, 1);
    c = targCVec{num};
@@ -93,18 +95,11 @@ for num = 1:numTarg
    displayTd(targ, c, ax);
 end
 
-%Plot the drawing
-% axes(handles.stimulus);
-% delete(get(handles.stimulus, 'Children'));
-% hold on;
-% res = genStimulus(prob, sHeight, sWidth, percentWhite, targ, handles.stimulus);
-% set(gcf, 'UserData', res);
-% 
-% %Next we are going to store some more data:
-% testNum = 1;
-% s = sprintf('Test: %d/%d', testNum, Ns);
-% set(handles.testCountLabel, 'String', s);
-% set(handles.testCountLabel, 'UserData', testNum);
+% Next we are going to store some more data:
+testNum = 1;
+s = sprintf('Test: %d/%d', testNum, numTrials);
+set(handles.testCountLabel, 'String', s);
+set(handles.testCountLabel, 'UserData', testNum);
 
 % Choose default command line output for ActualTest
 handles.output = hObject;
@@ -113,54 +108,59 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 %%Create the output folder%%
-% [folder, ~, ~] = fileparts(mfilename('fullpath'));
-% if isdeployed
-%     folder = pwd;
-% end
-% resFolder = 'Results';
-% resFolder = fullfile(folder, resFolder);
-% if ~exist(resFolder, 'dir')
-%     mkdir(resFolder);
-% end
-% 
-% ln = inputs{2};
-% fn = inputs{1};
-% 
-% fileName = sprintf('%s-%s-out.txt', fn, ln);
-% outFile = fullfile(resFolder, fileName);
-% 
-% fid = fopen(outFile, 'at');
-% fprintf(fid, 'Name: %s, %s\n', ln, fn);
-% fprintf(fid, '%s\n', datestr(now));
-% fprintf(fid, '\nTest Parameters:\n');
-% fprintf(fid, 'Stimulus no. of dots per dimension: %d\n', sHeight);
-% fprintf(fid, 'Percentage of whitespace: %f\n', percentWhite);
-% fprintf(fid, 'Probability of target presence: %f\n', prob);
-% fprintf(fid, 'Number of trials: %d\n', Ns);
-% fprintf(fid, 'Display Time for each stimulus: %f sec\n', dispTime);
-% fprintf(fid, 'Wait time between consecutive trials: %f sec\n', waitTime);
-% fprintf(fid, '\n');
-% fclose(fid);
-% 
-% %Now we have to set up the timer before displaying the
-% %stimulus
-% waitTimer = timer;
-% waitTimer.period = 1;
-% set(waitTimer,'ExecutionMode','fixedrate','StartDelay',1);
-% set(waitTimer, 'TimerFcn', {@countDown, handles});
-% set(waitTimer, 'StopFcn', {@timesup, handles});
-% 
-% %Set up display timer, but of course don't start it until wait timer
-% %is done
-% dispTimer = timer;
-% dispTimer.period = 1;
-% set(dispTimer,'ExecutionMode','fixedrate','StartDelay', 0);
-% set(dispTimer, 'TimerFcn', {@dispTimeGoing, handles});
-% set(dispTimer, 'StopFcn', {@dispTimesUp, handles});
-% timeLeft = dispTime;
-% 
-% %begin the actual test
-% start(waitTimer);
+[folder, ~, ~] = fileparts(mfilename('fullpath'));
+if isdeployed
+    folder = pwd;
+end
+resFolder = 'Results';
+resFolder = fullfile(folder, resFolder);
+if ~exist(resFolder, 'dir')
+    mkdir(resFolder);
+end
+
+ln = inputs{2};
+fn = inputs{1};
+
+fileName = sprintf('%s-%s-out.txt', fn, ln);
+outFile = fullfile(resFolder, fileName);
+
+%Parameters for each experiment
+fid = fopen(outFile, 'at');
+fprintf(fid, 'Name: %s, %s\n', ln, fn);
+fprintf(fid, '%s\n', datestr(now));
+fprintf(fid, '\nTest Parameters:\n');
+fprintf(fid, 'Stimulus height (no. of dots): %d\n', sHeight);
+fprintf(fid, 'Stimulus width (no. of dots): %d\n', sWidth);
+fprintf(fid, 'Number of targets: %d\n', numTarg);
+fprintf(fid, 'Number of distractors: %d\n', numDis);
+fprintf(fid, 'Target/Distractor dots per dimension: %d\n', dim);
+fprintf(fid, 'Probability of target presence: %f\n', prob);
+fprintf(fid, 'Number of copies of each distractor: %d\n', nCopies);
+fprintf(fid, 'Number of trials: %d\n', numTrials);
+fprintf(fid, 'Display Time for each stimulus: %f sec\n', dispTime);
+fprintf(fid, 'Wait time between consecutive trials: %f sec\n', waitTime);
+fprintf(fid, '\n');
+fclose(fid);
+
+%Now we have to set up the timer before displaying the stimulus
+waitTimer = timer;
+waitTimer.period = 1;
+set(waitTimer,'ExecutionMode','fixedrate','StartDelay',1);
+set(waitTimer, 'TimerFcn', {@countDown, handles});
+set(waitTimer, 'StopFcn', {@timesup, handles});
+waitTimeLeft = waitTime;
+
+%Set up display timer, but of course don't start it until wait timer
+%is done
+dispTimer = timer;
+dispTimer.period = 1;
+set(dispTimer,'ExecutionMode','fixedrate','StartDelay', 0);
+set(dispTimer, 'TimerFcn', {@dispTimeGoing, handles});
+set(dispTimer, 'StopFcn', {@dispTimesUp, handles});
+timeLeft = dispTime;
+
+%begin the actual test
+start(waitTimer);
 
 % UIWAIT makes ActualTest wait for user response (see UIRESUME)
 % uiwait(handles.actualTest);
@@ -172,7 +172,7 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 % UIWAIT makes actualTest wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+% uiwait(handles.actualTest);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -191,6 +191,7 @@ function yesButton_Callback(hObject, eventdata, handles)
 % hObject    handle to yesButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+response(hObject, eventdata, handles, 1);
 
 
 % --- Executes on button press in noButton.
@@ -198,3 +199,144 @@ function noButton_Callback(hObject, eventdata, handles)
 % hObject    handle to noButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+response(hObject, eventdata, handles, 0);
+
+
+%%Helpers%%
+%Records User Response
+function response(hObject, eventdata, handles, isYes)
+global outFile correct totTime dispTimer numTrials;
+stop(dispTimer);
+
+timeSpent = toc;
+totTime = totTime + timeSpent;
+
+axes(handles.stim);
+delete(get(handles.stim, 'Children'));
+
+%log response:
+testNum = get(handles.testCountLabel, 'UserData');
+res = get(gcbf, 'UserData');
+corrStr = 'Incorrect';
+
+resStr = 'No';
+if res == 1
+    resStr = 'Yes';
+end
+
+userStr = 'No';
+if isYes == 1
+    userStr = 'Yes';
+end
+
+if res == isYes
+    correct = correct + 1;
+    corrStr = 'correct';
+end
+
+s = sprintf('Trial %d of %d\tUser: %s\tActual: %s (%s)\tResponse time: %f sec',...
+    testNum, numTrials, userStr, resStr, corrStr, timeSpent);
+fid = fopen(outFile, 'at');
+fprintf(fid, '%s', s);
+fprintf(fid, '\n');
+fclose(fid);
+
+testNum = testNum + 1;
+
+if testNum > numTrials
+   hitRate = 100*correct/numTrials;
+   avgTime = totTime/numTrials;
+   fid = fopen(outFile, 'at');
+   fprintf(fid, '\nYou got %d out of %d correct\n', correct, numTrials);
+   fprintf(fid, 'Hit Rate: %f percent\n', hitRate);
+   fprintf(fid, 'Average response time: %f sec\n', avgTime);
+   fprintf(fid, '----------\n');
+   fclose(fid);
+   
+   close(gcbf);
+   figure(beginTest);
+else
+    s = sprintf('Test: %d/%d', testNum, numTrials);
+    set(handles.testCountLabel, 'String', s);
+    set(handles.testCountLabel, 'UserData', testNum);
+    restartWaitTimer(handles);
+end
+
+%draw blank stimulus
+function drawBlankStim(handles)
+global sHeight sWidth;
+axes(handles.stim);
+delete(get(handles.stim, 'Children'));
+blankStimulus(sHeight, sWidth, handles.stim);
+
+%---Timer Callbacks---
+%wait timer callbacks
+function countDown(hObject, eventdata, handles)
+global waitTimer dispTimer waitTimeLeft;
+stop(dispTimer);
+waitTimeLeft = waitTimeLeft - 1;
+if waitTimeLeft <= 0
+   stop(waitTimer); 
+end
+
+%This is call back to stop wait timer
+function timesup(hObject, eventdata, handles)
+global targCVec disCVec targCell disCell;
+global sHeight sWidth minDist bgColour dim nCopies prob;
+
+set(handles.yesButton, 'Enable', 'on');
+set(handles.noButton, 'Enable', 'on');
+
+%TODO: draw the stimulus here
+axes(handles.stim);
+delete(get(handles.stim, 'Children'));
+res = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
+    targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim);
+set(gcbf, 'UserData', res);
+
+restartDispTimer(handles)
+tic;
+
+function restartWaitTimer(handles)
+global waitTimer waitTime waitTimeLeft;
+set(handles.yesButton, 'Enable', 'off');
+set(handles.noButton, 'Enable', 'off');
+waitTimeLeft = waitTime;
+start(waitTimer);
+
+%Display timer callbacks
+function dispTimesUp(hObject, eventdata, handles)
+%Empty function
+
+function dispTimeGoing(hObject, eventdata, handles)
+global dispTimer timeLeft;
+timeLeft = timeLeft - 1;
+if timeLeft < 0
+    stop(dispTimer);
+    drawBlankStim(handles);
+end
+
+function restartDispTimer(handles)
+global dispTimer timeLeft dispTime;
+timeLeft = dispTime;
+start(dispTimer);
+
+
+% --- Executes on key press with focus on actualTest or any of its controls.
+function actualTest_WindowKeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to actualTest (see GCBO)
+% eventdata  structure with the following fields (see FIGURE)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+switch eventdata.Key
+  case 'y'
+     if strcmp(get(handles.yesButton, 'Enable'), 'on')
+        yesButton_Callback(hObject, eventdata, handles) 
+     end
+  case 'n'
+      if strcmp(get(handles.noButton, 'Enable'), 'on')
+        noButton_Callback(hObject, eventdata, handles)
+      end
+end

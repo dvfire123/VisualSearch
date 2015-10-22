@@ -1,4 +1,4 @@
-function imHandle = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
+function res = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
     targC, disC, nCopies, p, minDist, bgColour, axHandle)
     %This function generates the stimulus image for the actual test
     
@@ -16,7 +16,7 @@ function imHandle = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
     %bgColour: background colour of the stimulus
     %axHandle: the axes handle in which to place the stimulus
     
-    %RETURNS: handle to the stimulus image
+    %RETURNS: whether target 1/2 are in the drawing or not
     MAX_TRIES = 1000;
     
     [~, numTarg] = size(targCell);
@@ -26,7 +26,7 @@ function imHandle = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
     minSize = frameSize*frameSize*numPics;
     
     if minSize > sHeight*sWidth
-       imHandle = 0;
+       res = 0;
        disp('Drawings cannot fit onto the stimulus!\n');
        return;
     end
@@ -46,6 +46,7 @@ function imHandle = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
     
     %first let's display the target(s)
     targCount = 0;
+    res = 0;
     while targCount < numTarg
        targCount = targCount + 1;
        targ = targCell{targCount};
@@ -55,6 +56,8 @@ function imHandle = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
           %display the target
           tries = 0;
           found = 1;
+          res = 1;  %just need at least 1 target present for res = 1
+          
           frame = preProcessDrawing(targ, c, bgColour, minDist);
           insertRangeHeight = sHeight - frameSize + 1;
           insertRangeWidth = sWidth - frameSize + 1;
@@ -91,11 +94,11 @@ function imHandle = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
         for k = 1:nCopies
             %We first need to randomly rotate each of the distractors
             if rand < 0.5
-                flipdim(dis, 1);
+                dis = flipdim(dis, 1);
             end
             
             if rand < 0.5
-                flipdim(dis, 2);
+                dis = flipdim(dis, 2);
             end
             
             %Then add the distractor to the canvas
@@ -131,8 +134,10 @@ function imHandle = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
     end
     
     %Finally we display the canvas in the specified axes handle
-    lim = [1/(2*sHeight), 1 - 1/(2*sWidth)];
-    imHandle = image(lim, lim, canvas, 'Parent', axHandle);
+    xl = [1/(2*sWidth), 1 - 1/(2*sWidth)];
+    yl = [1/(2*sHeight), 1 - 1/(2*sHeight)];
+    
+    image(xl, yl, canvas, 'parent', axHandle);
     colormap('default');
     axis equal;
 end

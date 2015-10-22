@@ -110,6 +110,7 @@ function showButton_Callback(hObject, eventdata, handles)
 global targCVec disCVec targCell disCell;
 global sHeight sWidth minDist bgColour dim nCopies p;
 delete(get(handles.previewStim, 'Children'));
+axes(handles.previewStim);
 createStimulus(sHeight, sWidth, dim, targCell, disCell,...
     targCVec, disCVec, nCopies, p, minDist, bgColour, handles.previewStim)
 
