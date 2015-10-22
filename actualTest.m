@@ -101,12 +101,6 @@ s = sprintf('Test: %d/%d', testNum, numTrials);
 set(handles.testCountLabel, 'String', s);
 set(handles.testCountLabel, 'UserData', testNum);
 
-% Choose default command line output for ActualTest
-handles.output = hObject;
-
-% Update handles structure
-guidata(hObject, handles);
-
 %%Create the output folder%%
 [folder, ~, ~] = fileparts(mfilename('fullpath'));
 if isdeployed
@@ -142,6 +136,12 @@ fprintf(fid, 'Wait time between consecutive trials: %f sec\n', waitTime);
 fprintf(fid, '\n');
 fclose(fid);
 
+% Choose default command line output for ActualTest
+handles.output = hObject;
+
+% Update handles structure
+guidata(hObject, handles);
+
 %Now we have to set up the timer before displaying the stimulus
 waitTimer = timer;
 waitTimer.period = 1;
@@ -156,7 +156,6 @@ dispTimer = timer;
 dispTimer.period = 1;
 set(dispTimer,'ExecutionMode','fixedrate','StartDelay', 0);
 set(dispTimer, 'TimerFcn', {@dispTimeGoing, handles});
-set(dispTimer, 'StopFcn', {@dispTimesUp, handles});
 timeLeft = dispTime;
 
 %begin the actual test
@@ -268,7 +267,7 @@ blankStimulus(sHeight, sWidth, handles.stim);
 %draw cover (with cross in the middle)
 function drawCross(handles)
 global sHeight sWidth;
-SHRINK_FACTOR = 5;
+SHRINK_FACTOR = 1;
 height = sHeight/SHRINK_FACTOR;
 width = sWidth/SHRINK_FACTOR;
 crossStimulus(height, width, handles.stim);
@@ -284,18 +283,18 @@ if waitTimeLeft <= 0
 end
 
 %This is call back to stop wait timer
+%stimulus is drawn here
 function timesup(hObject, eventdata, handles)
 global targCVec disCVec targCell disCell;
 global sHeight sWidth minDist bgColour dim nCopies prob;
 
+res = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
+   targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim);
+
+set(gcf, 'UserData', res);
+
 set(handles.yesButton, 'Enable', 'on');
 set(handles.noButton, 'Enable', 'on');
-
-%delete(get(handles.stim, 'Children'));
-%res = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
-%   targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim);
-res = 1;
-set(gcf, 'UserData', res);
 
 restartDispTimer(handles)
 tic;
@@ -309,9 +308,6 @@ drawCross(handles);
 start(waitTimer);
 
 %Display timer callbacks
-function dispTimesUp(hObject, eventdata, handles)
-%Empty function
-
 function dispTimeGoing(hObject, eventdata, handles)
 global dispTimer timeLeft;
 timeLeft = timeLeft - 1;
@@ -320,7 +316,7 @@ if timeLeft < 0
     drawBlankStim(handles);
 end
 
-function restartDispTimer(handles)
+function restartDispTimer()
 global dispTimer timeLeft dispTime;
 timeLeft = dispTime;
 start(dispTimer);
