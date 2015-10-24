@@ -143,5 +143,5 @@ function res = createStimulus(sHeight, sWidth, dim, targCell, disCell, ...
     
     axes(axHandle);
     image(xl, yl, canvas, 'parent', axHandle);
-    %colormap('default');
+    colormap(axHandle, 'default');
 end

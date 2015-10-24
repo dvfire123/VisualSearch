@@ -13,6 +13,6 @@ function crossHandle = crossStimulus(height, width, axesHandle)
     yl = [1/(2*height), 1 - 1/(2*height)];
     
     crossHandle = image(xl, yl, stim, 'parent', axesHandle);
-    colormap('default');
+    colormap(axesHandle, 'default');
 end
 
