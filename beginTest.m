@@ -204,7 +204,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function dt_Callback(hObject, eventdata, handles)
 % hObject    handle to dt (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -290,7 +289,6 @@ function goButton_Callback(hObject, eventdata, handles)
 %First save the data
 clearAnother();
 saveDataToFile(hObject, eventdata, handles);
-figure(saveDataConfirm);
 
 %Then proceed
 figure(drawTd);

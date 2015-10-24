@@ -54,7 +54,8 @@ function actualTest_OpeningFcn(hObject, eventdata, handles, varargin)
 global targCVec disCVec targCell disCell dispTime waitTime;
 global sHeight sWidth minDist bgColour dim nCopies prob numTrials;
 global waitTimer dispTimer timeLeft waitTimeLeft;
-global outFile correct totTime;
+global outFile correct totTime res;
+global crossHandle;
 
 dim = 20;
 sHeight = 400;
@@ -147,7 +148,7 @@ waitTimer = timer;
 waitTimer.period = 1;
 set(waitTimer,'ExecutionMode','fixedrate','StartDelay',1);
 set(waitTimer, 'TimerFcn', {@countDown, handles});
-set(waitTimer, 'StopFcn', {@timesup, handles});
+set(waitTimer, 'StopFcn', {@waitTimeUp, handles});
 waitTimeLeft = waitTime;
 
 %Set up display timer, but of course don't start it until wait timer
@@ -158,8 +159,18 @@ set(dispTimer,'ExecutionMode','fixedrate','StartDelay', 0);
 set(dispTimer, 'TimerFcn', {@dispTimeGoing, handles});
 timeLeft = dispTime;
 
+%Set up the cover:
+pos = get(handles.stim, 'Position');
+set(handles.coverLabel, 'Position', pos);
+set(handles.coverLabel, 'visible', 'off');
+
 %begin the actual test
-drawCross(handles);
+axes(handles.stim);
+delete(get(handles.stim, 'Children'));
+hold on;
+res = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
+        targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim);
+crossHandle = drawCross(handles);
 start(waitTimer);
 
 % UIWAIT makes ActualTest wait for user response (see UIRESUME)
@@ -205,7 +216,10 @@ response(hObject, eventdata, handles, 0);
 %%Helpers%%
 %Records User Response
 function response(hObject, eventdata, handles, isYes)
-global outFile correct totTime dispTimer numTrials;
+global targCVec disCVec targCell disCell;
+global sHeight sWidth minDist bgColour dim nCopies prob;
+global outFile correct totTime dispTimer numTrials res;
+
 stop(dispTimer);
 
 timeSpent = toc;
@@ -213,7 +227,6 @@ totTime = totTime + timeSpent;
 
 %log response:
 testNum = get(handles.testCountLabel, 'UserData');
-res = get(gcf, 'UserData');
 corrStr = 'Incorrect';
 
 resStr = 'No';
@@ -256,26 +269,29 @@ else
     s = sprintf('Test: %d/%d', testNum, numTrials);
     set(handles.testCountLabel, 'String', s);
     set(handles.testCountLabel, 'UserData', testNum);
+    res = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
+        targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim);
     restartWaitTimer(handles);
 end
 
-%draw blank stimulus
-function drawBlankStim(handles)
-global sHeight sWidth;
-blankStimulus(sHeight, sWidth, handles.stim);
 
 %draw cover (with cross in the middle)
-function drawCross(handles)
+function crossHandle = drawCross(handles)
 global sHeight sWidth;
-SHRINK_FACTOR = 1;
+SHRINK_FACTOR = 10;
 height = sHeight/SHRINK_FACTOR;
 width = sWidth/SHRINK_FACTOR;
-crossStimulus(height, width, handles.stim);
+
+axes(handles.stim);
+delete(get(handles.stim, 'Children'));
+hold on;
+crossHandle = crossStimulus(height, width, handles.stim);
 
 %---Timer Callbacks---
 %wait timer callbacks
 function countDown(hObject, eventdata, handles)
 global waitTimer dispTimer waitTimeLeft;
+disp('Countdown wait time!');
 stop(dispTimer);
 waitTimeLeft = waitTimeLeft - 1;
 if waitTimeLeft <= 0
@@ -284,14 +300,11 @@ end
 
 %This is call back to stop wait timer
 %stimulus is drawn here
-function timesup(hObject, eventdata, handles)
-global targCVec disCVec targCell disCell;
-global sHeight sWidth minDist bgColour dim nCopies prob;
+function waitTimeUp(hObject, eventdata, handles)
+global crossHandle;
 
-res = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
-   targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim);
-
-set(gcf, 'UserData', res);
+axes(handles.stim);
+set(crossHandle, 'visible', 'off');
 
 set(handles.yesButton, 'Enable', 'on');
 set(handles.noButton, 'Enable', 'on');
@@ -301,19 +314,25 @@ tic;
 
 function restartWaitTimer(handles)
 global waitTimer waitTime waitTimeLeft;
+global crossHandle;
+
 set(handles.yesButton, 'Enable', 'off');
 set(handles.noButton, 'Enable', 'off');
 waitTimeLeft = waitTime;
-drawCross(handles);
+
+axes(handles.stim);
+set(crossHandle, 'visible', 'on');
+set(handles.coverLabel, 'visible', 'off');
 start(waitTimer);
 
 %Display timer callbacks
 function dispTimeGoing(hObject, eventdata, handles)
 global dispTimer timeLeft;
+
 timeLeft = timeLeft - 1;
 if timeLeft < 0
     stop(dispTimer);
-    drawBlankStim(handles);
+    set(handles.coverLabel, 'visible', 'on');
 end
 
 function restartDispTimer()

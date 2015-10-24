@@ -137,6 +137,8 @@ function res = createStimulus(sHeight, sWidth, dim, targCell, disCell, ...
     xl = [1/(2*sWidth), 1 - 1/(2*sWidth)];
     yl = [1/(2*sHeight), 1 - 1/(2*sHeight)];
     
+    axes(axHandle);
+    hold on;
     image(xl, yl, canvas, 'parent', axHandle);
     colormap('default');
 end
