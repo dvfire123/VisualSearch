@@ -293,7 +293,6 @@ global sHeight sWidth minDist bgColour dim nCopies prob res;
 
 axes(handles.stim);
 delete(get(handles.stim, 'Children'));
-hold on;
 res = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
         targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim, 1);
 
