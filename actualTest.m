@@ -309,7 +309,7 @@ set(crossHandle, 'visible', 'off');
 set(handles.yesButton, 'Enable', 'on');
 set(handles.noButton, 'Enable', 'on');
 
-restartDispTimer(handles)
+restartDispTimer();
 tic;
 
 function restartWaitTimer(handles)
