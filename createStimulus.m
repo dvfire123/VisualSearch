@@ -1,5 +1,5 @@
 function res = createStimulus(sHeight, sWidth, dim, targCell, disCell, ...
-    targC, disC, nCopies, p, minDist, bgColour, axHandle)
+    targC, disC, nCopies, p, minDist, bgColour, axHandle, invTarg)
     %This function generates the stimulus image for the actual test
     
     %INPUTS:
@@ -51,6 +51,10 @@ function res = createStimulus(sHeight, sWidth, dim, targCell, disCell, ...
        targCount = targCount + 1;
        targ = targCell{targCount};
        c = targC{targCount};
+       
+       if invTarg == 1
+           targ = flipdim(targ, 1);
+       end
        
        if rand < p
           %display the target

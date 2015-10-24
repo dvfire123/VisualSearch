@@ -71,7 +71,7 @@ p = 1;  %So both of the targets will show in the preview
 
 %Display a stimulus
 createStimulus(sHeight, sWidth, dim, targCell, disCell,...
-    targCVec, disCVec, nCopies, p, minDist, bgColour, handles.previewStim);
+    targCVec, disCVec, nCopies, p, minDist, bgColour, handles.previewStim, 1);
 
 % Choose default command line output for previewTd
 handles.output = hObject;
@@ -110,7 +110,7 @@ function showButton_Callback(hObject, eventdata, handles)
 global targCVec disCVec targCell disCell;
 global sHeight sWidth minDist bgColour dim nCopies p;
 createStimulus(sHeight, sWidth, dim, targCell, disCell,...
-    targCVec, disCVec, nCopies, p, minDist, bgColour, handles.previewStim);
+    targCVec, disCVec, nCopies, p, minDist, bgColour, handles.previewStim, 1);
 
 % --- Executes on button press in startoverButton.
 function startoverButton_Callback(hObject, eventdata, handles)
