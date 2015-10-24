@@ -173,6 +173,7 @@ hold on;
 delete(get(handles.td, 'Children'));
 imHandle = displayTd(drawing, c, handles.td);
 set(imHandle, 'HitTest', 'off');
+saveDrawing(handles, drawing, c);
 
 %Helper to clear
 function clearDrawing(handles)
