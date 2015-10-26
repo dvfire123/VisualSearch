@@ -318,7 +318,6 @@ elseif isTarg == 1 && num >= NT
    %commencing drawing of distractor now
    changeToDis(hObject, eventdata, handles);
 else
-    %Temp
     close;
     figure(actualTest);
 end
