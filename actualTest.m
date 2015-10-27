@@ -22,7 +22,7 @@ function varargout = actualTest(varargin)
 
 % Edit the above text to modify the response to help actualTest
 
-% Last Modified by GUIDE v2.5 22-Oct-2015 00:27:12
+% Last Modified by GUIDE v2.5 26-Oct-2015 20:26:26
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -54,7 +54,10 @@ function actualTest_OpeningFcn(hObject, eventdata, handles, varargin)
 global targCVec disCVec targCell disCell dispTime waitTime;
 global sHeight sWidth minDist bgColour dim nCopies prob numTrials;
 global waitTimer dispTimer timeLeft waitTimeLeft;
-global outFile correct totTime res;
+global outFile correct totTime;
+
+set(handles.yesButton, 'visible', 'off');
+set(handles.noButton, 'visible', 'off');
 
 dim = 20;
 sHeight = 400;
@@ -184,7 +187,7 @@ varargout{1} = handles.output;
 
 
 % --- Executes on button press in yesButton.
-function yesButton_Callback(hObject, eventdata, handles)
+function yesResponse(hObject, eventdata, handles)
 % hObject    handle to yesButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -192,11 +195,12 @@ response(hObject, eventdata, handles, 1);
 
 
 % --- Executes on button press in noButton.
-function noButton_Callback(hObject, eventdata, handles)
+function noResponse(hObject, eventdata, handles)
 % hObject    handle to noButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 response(hObject, eventdata, handles, 0);
+
 
 
 %%Helpers%%
@@ -340,10 +344,24 @@ function actualTest_WindowKeyPressFcn(hObject, eventdata, handles)
 switch eventdata.Key
   case 'y'
      if strcmp(get(handles.yesButton, 'Enable'), 'on')
-        yesButton_Callback(hObject, eventdata, handles) 
+        yesResponse(hObject, eventdata, handles) 
      end
   case 'n'
       if strcmp(get(handles.noButton, 'Enable'), 'on')
-        noButton_Callback(hObject, eventdata, handles)
+        noResponse(hObject, eventdata, handles)
       end
 end
+
+
+% --- Executes on button press in yesButton.
+function yesButton_Callback(hObject, eventdata, handles)
+% hObject    handle to yesButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in noButton.
+function noButton_Callback(hObject, eventdata, handles)
+% hObject    handle to noButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)

@@ -60,7 +60,7 @@ else
     next = 'distractor';
 end
 
-msg = sprintf('Do you wish to\ndraw your next %s?', next);
+msg = sprintf('Do you wish to draw or load\nyour next %s?', next);
 set(handles.msg, 'string', msg);
 
 % Choose default command line output for drawNextBox

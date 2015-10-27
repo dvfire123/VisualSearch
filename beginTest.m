@@ -161,9 +161,8 @@ function nCopies_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of nCopies as text
 %        str2double(get(hObject,'String')) returns contents of nCopies as a double
-MAX_COPIES = 10;
 nCopies = str2double(get(handles.nCopies, 'string'));
-nCopies = max(0, min(nCopies, MAX_COPIES));
+nCopies = max(0, nCopies);
 set(handles.nCopies, 'string', num2str(nCopies));
 
 
@@ -211,6 +210,9 @@ function dt_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of dt as text
 %        str2double(get(hObject,'String')) returns contents of dt as a double
+dt = str2double(get(handles.dt, 'string'));
+dt = max(0, dt);
+set(handles.dt, 'string', num2str(dt));
 
 
 % --- Executes during object creation, after setting all properties.
@@ -234,6 +236,9 @@ function wt_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of wt as text
 %        str2double(get(hObject,'String')) returns contents of wt as a double
+wt = str2double(get(handles.wt, 'string'));
+wt = max(0, wt);
+set(handles.wt, 'string', num2str(wt));
 
 
 % --- Executes during object creation, after setting all properties.
@@ -257,6 +262,9 @@ function numTrials_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of numTrials as text
 %        str2double(get(hObject,'String')) returns contents of numTrials as a double
+numTrials = str2double(get(handles.numTrials, 'string'));
+numTrials = max(1, numTrials);
+set(handles.numTrials, 'string', num2str(numTrials));
 
 
 % --- Executes during object creation, after setting all properties.
