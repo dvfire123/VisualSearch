@@ -22,7 +22,7 @@ function varargout = beginTest(varargin)
 
 % Edit the above text to modify the response to help beginTest
 
-% Last Modified by GUIDE v2.5 21-Oct-2015 15:38:02
+% Last Modified by GUIDE v2.5 27-Oct-2015 11:06:23
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -228,33 +228,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
-function wt_Callback(hObject, eventdata, handles)
-% hObject    handle to wt (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of wt as text
-%        str2double(get(hObject,'String')) returns contents of wt as a double
-wt = str2double(get(handles.wt, 'string'));
-wt = max(0, wt);
-set(handles.wt, 'string', num2str(wt));
-
-
-% --- Executes during object creation, after setting all properties.
-function wt_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to wt (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
 function numTrials_Callback(hObject, eventdata, handles)
 % hObject    handle to numTrials (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -346,16 +319,18 @@ ln = get(handles.ln, 'string');
 p = get(handles.p, 'string');
 nCopies = get(handles.nCopies, 'string');
 dt = get(handles.dt, 'string');
-wt = get(handles.wt, 'string');
 numTrials = get(handles.numTrials, 'string');
+hSquish = get(handles.hs, 'string');
+wSquish = get(handles.ws, 'string');
 
 inputs{1} = fn;
 inputs{2} = ln;
 inputs{3} = p;
 inputs{4} = nCopies;
 inputs{5} = dt;
-inputs{6} = wt;
-inputs{7} = numTrials;
+inputs{6} = numTrials;
+inputs{7} = hSquish;
+inputs{8} = wSquish;
 
 setappdata(gcf, 'inputs', inputs);
 
@@ -365,8 +340,9 @@ set(handles.ln, 'string', inputs{2});
 set(handles.p, 'string', inputs{3});
 set(handles.nCopies, 'string', inputs{4});
 set(handles.dt, 'string', inputs{5});
-set(handles.wt, 'string', inputs{6});
-set(handles.numTrials, 'string', inputs{7});
+set(handles.numTrials, 'string', inputs{6});
+set(handles.hs, 'string', inputs{7});
+set(handles.ws, 'string', inputs{8});
 
 function updateLatestFile(file)
 global latestData;
@@ -385,4 +361,55 @@ function clearAnother()
 another = getappdata(0, 'another');
 if ~isempty(another)
     rmappdata(0, 'another');
+end
+
+
+function ws_Callback(hObject, eventdata, handles)
+% hObject    handle to ws (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of ws as text
+%        str2double(get(hObject,'String')) returns contents of ws as a double
+ws = str2double(get(handles.ws, 'string'));
+ws = max(10, min(ws, 100));
+set(handles.ws, 'string', num2str(ws));
+
+
+% --- Executes during object creation, after setting all properties.
+function ws_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to ws (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function hs_Callback(hObject, eventdata, handles)
+% hObject    handle to hs (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of hs as text
+%        str2double(get(hObject,'String')) returns contents of hs as a double
+hs = str2double(get(handles.hs, 'string'));
+hs = max(10, min(hs, 100));
+set(handles.hs, 'string', num2str(hs));
+
+
+% --- Executes during object creation, after setting all properties.
+function hs_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to hs (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
 end

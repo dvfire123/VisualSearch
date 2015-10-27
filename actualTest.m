@@ -51,17 +51,18 @@ function actualTest_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to actualTest (see VARARGIN)
-global targCVec disCVec targCell disCell dispTime waitTime;
-global sHeight sWidth minDist bgColour dim nCopies prob numTrials;
-global waitTimer dispTimer timeLeft waitTimeLeft;
+global targCVec disCVec targCell disCell dispTime;
+global FULL_HEIGHT FULL_WIDTH sHeight sWidth minDist bgColour dim;
+global nCopies prob numTrials;
+global dispTimer timeLeft;
 global outFile correct totTime;
 
 set(handles.yesButton, 'visible', 'off');
 set(handles.noButton, 'visible', 'off');
 
 dim = 20;
-sHeight = 400;
-sWidth = 600;
+FULL_HEIGHT = 400;
+FULL_WIDTH = 600;
 bgColour = [1 1 1]; %white
 minDist = ceil(dim/4);
 
@@ -76,8 +77,12 @@ disCVec = getappdata(0, 'dcCell');
 prob = str2double(inputs{3});
 nCopies = str2double(inputs{4});
 dispTime = str2double(inputs{5});
-waitTime = str2double(inputs{6});
-numTrials = str2double(inputs{7});
+numTrials = str2double(inputs{6});
+hs = str2double(inputs{7});
+ws = str2double(inputs{8});
+
+sHeight = FULL_HEIGHT*hs/100;
+sWidth = FULL_WIDTH*ws/100;
 
 correct = 0;
 totTime = 0;
@@ -125,9 +130,15 @@ outFile = fullfile(resFolder, fileName);
 fid = fopen(outFile, 'at');
 fprintf(fid, 'Name: %s, %s\n', ln, fn);
 fprintf(fid, '%s\n', datestr(now));
+
 fprintf(fid, '\nTest Parameters:\n');
-fprintf(fid, 'Stimulus height (no. of dots): %d\n', sHeight);
-fprintf(fid, 'Stimulus width (no. of dots): %d\n', sWidth);
+fprintf(fid, 'Maximum stimulus height (no. of dots): %d\n', FULL_HEIGHT);
+fprintf(fid, 'Maximum stimulus height (no. of dots): %d\n', FULL_WIDTH);
+fprintf(fid, 'Actual stimulus height (no. of dots): %d\n', sHeight);
+fprintf(fid, 'Actual stimulus width (no. of dots): %d\n', sWidth);
+fprintf(fid, 'Percent of full height used: %f\n', hs);
+fprintf(fid, 'Percent of full width used: %f\n', ws);
+
 fprintf(fid, 'Number of targets: %d\n', numTarg);
 fprintf(fid, 'Number of distractors: %d\n', numDis);
 fprintf(fid, 'Target/Distractor dots per dimension: %d\n', dim);
@@ -135,7 +146,6 @@ fprintf(fid, 'Probability of target presence: %f\n', prob);
 fprintf(fid, 'Number of copies of each distractor: %d\n', nCopies);
 fprintf(fid, 'Number of trials: %d\n', numTrials);
 fprintf(fid, 'Display Time for each stimulus: %f sec\n', dispTime);
-fprintf(fid, 'Wait time between consecutive trials: %f sec\n', waitTime);
 fprintf(fid, '\n');
 fclose(fid);
 
@@ -152,7 +162,6 @@ set(waitTimer,'ExecutionMode','fixedrate','StartDelay',1);
 set(waitTimer, 'StartFcn', {@drawCross, handles});
 set(waitTimer, 'TimerFcn', {@countDown});
 set(waitTimer, 'StopFcn', {@waitTimeUp, handles});
-waitTimeLeft = waitTime;
 
 %Set up display timer, but of course don't start it until wait timer
 %is done
@@ -169,7 +178,7 @@ set(handles.coverLabel, 'Position', pos);
 set(handles.coverLabel, 'visible', 'off');
 
 %begin the actual test
-start(waitTimer);
+nextTrial(handles);
 
 % UIWAIT makes ActualTest wait for user response (see UIRESUME)
 % uiwait(handles.actualTest);
@@ -206,8 +215,6 @@ response(hObject, eventdata, handles, 0);
 %%Helpers%%
 %Records User Response
 function response(hObject, eventdata, handles, isYes)
-global targCVec disCVec targCell disCell;
-global sHeight sWidth minDist bgColour dim nCopies prob;
 global outFile correct totTime dispTimer numTrials res;
 
 stop(dispTimer);
@@ -261,37 +268,25 @@ else
     s = sprintf('Test: %d/%d', testNum, numTrials);
     set(handles.testCountLabel, 'String', s);
     set(handles.testCountLabel, 'UserData', testNum);
-    restartWaitTimer(handles);
+    nextTrial(handles);
 end
 
 
-%---Timer Callbacks---
-%wait timer callbacks
-
 %draw fixations (with cross in the middle)
-function crossHandle = drawCross(~, ~, handles)
-global sHeight sWidth;
+function crossHandle = drawCross(handles)
+global FULL_HEIGHT FULL_WIDTH;
 SHRINK_FACTOR = 10;
-height = sHeight/SHRINK_FACTOR;
-width = sWidth/SHRINK_FACTOR;
+height = FULL_HEIGHT/SHRINK_FACTOR;
+width = FULL_WIDTH/SHRINK_FACTOR;
 
 axes(handles.stim);
 delete(get(handles.stim, 'Children'));
 hold on;
 crossHandle = crossStimulus(height, width, handles.stim);
 
-%The countdown fcn for wait time
-function countDown(~, ~)
-global waitTimer dispTimer waitTimeLeft;
-stop(dispTimer);
-waitTimeLeft = waitTimeLeft - 1;
-if waitTimeLeft <= 0
-   stop(waitTimer); 
-end
 
-%This is call back to stop wait timer
-%stimulus is drawn here
-function waitTimeUp(hObject, eventdata, handles)
+%helper to draw stim
+function showStim(handles)
 global targCVec disCVec targCell disCell;
 global sHeight sWidth minDist bgColour dim nCopies prob res;
 
@@ -299,6 +294,8 @@ axes(handles.stim);
 delete(get(handles.stim, 'Children'));
 res = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
         targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim, 1);
+    
+set(handles.stimulusLabel, 'string', 'Stimulus');
 
 set(handles.yesButton, 'Enable', 'on');
 set(handles.noButton, 'Enable', 'on');
@@ -306,16 +303,17 @@ set(handles.noButton, 'Enable', 'on');
 restartDispTimer();
 tic;
 
-function restartWaitTimer(handles)
-global waitTimer waitTime waitTimeLeft;
 
+function nextTrial(handles)
+%Dummy buttons: not actually shown
 set(handles.yesButton, 'Enable', 'off');
 set(handles.noButton, 'Enable', 'off');
-waitTimeLeft = waitTime;
 
 axes(handles.stim);
+delete(get(handles.stim, 'Childre'));
+drawCross(handles);
 set(handles.coverLabel, 'visible', 'off');
-start(waitTimer);
+set(handles.stimulusLabel, 'string', 'Press the space bar to show stimulus');
 
 %Display timer callbacks
 function dispTimeGoing(hObject, eventdata, handles)
@@ -350,6 +348,11 @@ switch eventdata.Key
       if strcmp(get(handles.noButton, 'Enable'), 'on')
         noResponse(hObject, eventdata, handles)
       end
+    case 'space'
+        %Show stimulus here only if the stim hasn't been shown
+        if strcmp(get(handles.yesButton, 'Enable'), 'off')
+            showStim(handles);
+        end
 end
 
 

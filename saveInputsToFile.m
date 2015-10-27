@@ -6,7 +6,8 @@ function [fileName, file] = saveInputsToFile(inputs, folder)
     fid = fopen(file, 'wt+');
 
     %Magic number most efficient here
-    for i = 1:7
+    NUM_PARAMS = 8;
+    for i = 1:NUM_PARAMS
        fprintf(fid, inputs{i});
        fprintf(fid, '\n');
     end
