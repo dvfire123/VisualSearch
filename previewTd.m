@@ -53,11 +53,15 @@ function previewTd_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to previewTd (see VARARGIN)
 global targCVec disCVec targCell disCell inputs;
 global sHeight sWidth minDist bgColour dim nCopies p;
+global FULL_HEIGHT FULL_WIDTH;
+
+%Note: Do Not Change!
 dim = 20;
-sHeight = 400;
-sWidth = 600;
+FULL_HEIGHT = 400;
+FULL_WIDTH = 600;
 bgColour = [1 1 1]; %white
 minDist = ceil(dim/4);
+%end note
 
 inputs = getappdata(0, 'inputs');
 targCell = getappdata(0, 'targCell');    %could be more than one target
@@ -66,11 +70,16 @@ targCVec = getappdata(0, 'tcCell');
 disCVec = getappdata(0, 'dcCell');
 
 nCopies = str2double(inputs{4});
+hs = str2double(inputs{7});
+ws = str2double(inputs{8});
+sHeight = FULL_HEIGHT*hs/100;
+sWidth = FULL_WIDTH*ws/100;
+
 p = 1;  %So both of the targets will show in the preview
 
 %Display a stimulus
-createStimulus(sHeight, sWidth, dim, targCell, disCell,...
-    targCVec, disCVec, nCopies, p, minDist, bgColour, handles.previewStim, 0);
+createStimulus(FULL_HEIGHT, sHeight, FULL_WIDTH, sWidth, dim, targCell, disCell,...
+    targCVec, disCVec, nCopies, p, minDist, bgColour, handles.previewStim, 1);
 
 % Choose default command line output for previewTd
 handles.output = hObject;
@@ -108,8 +117,9 @@ function showButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global targCVec disCVec targCell disCell;
 global sHeight sWidth minDist bgColour dim nCopies p;
-createStimulus(sHeight, sWidth, dim, targCell, disCell,...
-    targCVec, disCVec, nCopies, p, minDist, bgColour, handles.previewStim, 0);
+global FULL_HEIGHT FULL_WIDTH;
+createStimulus(FULL_HEIGHT, sHeight, FULL_WIDTH, sWidth, dim, targCell, disCell,...
+    targCVec, disCVec, nCopies, p, minDist, bgColour, handles.previewStim, 1);
 
 % --- Executes on button press in startoverButton.
 function startoverButton_Callback(hObject, eventdata, handles)

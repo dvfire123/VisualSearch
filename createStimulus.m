@@ -1,10 +1,12 @@
-function [res, totalTarg, totalDis] = createStimulus(sHeight, sWidth, dim, targCell, disCell, ...
-    targC, disC, nCopies, p, minDist, bgColour, axHandle, invTarg)
+function [res, totalTarg, totalDis] = createStimulus(fullHeight, sHeight, fullWidth, sWidth, dim,...
+    targCell, disCell, targC, disC, nCopies, p, minDist, bgColour, axHandle, invTarg)
     %This function generates the stimulus image for the actual test
     
     %INPUTS:
-    %sHeight: height of the stimulus
-    %sWidth: width of the stimulus
+    %fullHeight: height of the stimulus
+    %fullWidth: width of the stimulus
+    %sHeight: actual height to fit all the drawings
+    %sWidth: actual width to fit all the drawings
     %dim: drawing is dim x dim
     %targCell: array of targets
     %disCell: array of distractors
@@ -22,16 +24,18 @@ function [res, totalTarg, totalDis] = createStimulus(sHeight, sWidth, dim, targC
     [~, numTarg] = size(targCell);
     [~, numDis] = size(disCell);
     frameSize = dim + 2*minDist;
+    sHeight = round(sHeight);
+    sWidth = round(sWidth);
     
     %To make sure the layout is randomly different each time
     rand('twister', 100*sum(clock));
     
     %Helper: memory matrix to help us determine whether a drawing is
     %occupying the space or not
-    memchart = zeros(sHeight, sWidth);
+    memchart = zeros(fullHeight, fullWidth);
     
     %Create the canvas first
-    canvas = ones(sHeight, sWidth, 3);
+    canvas = ones(fullHeight, fullWidth, 3);
     for i = 1:3
        canvas(:, :, i) = bgColour(i); 
     end
@@ -66,8 +70,8 @@ function [res, totalTarg, totalDis] = createStimulus(sHeight, sWidth, dim, targC
           frame = preProcessDrawing(targ, c, bgColour, minDist);
           insertRangeHeight = sHeight - frameSize + 1;
           insertRangeWidth = sWidth - frameSize + 1;
-          top = ceil(rand*insertRangeHeight);
-          left = ceil(rand*insertRangeWidth);
+          top = ceil(rand*insertRangeHeight + floor((fullHeight - sHeight)/2));
+          left = ceil(rand*insertRangeWidth + floor((fullWidth - sWidth)/2));
           
           while getFitStatus(memchart, frame, top, left) == 0
              tries = tries + 1;
@@ -119,8 +123,8 @@ function [res, totalTarg, totalDis] = createStimulus(sHeight, sWidth, dim, targC
             frame = preProcessDrawing(dis, c, bgColour, minDist);
             insertRangeHeight = sHeight - frameSize + 1;
             insertRangeWidth = sWidth - frameSize + 1;
-            top = ceil(rand*insertRangeHeight);
-            left = ceil(rand*insertRangeWidth);
+            top = ceil(rand*insertRangeHeight + floor((fullHeight - sHeight)/2));
+            left = ceil(rand*insertRangeWidth + floor((fullWidth - sWidth)/2));
 
             while getFitStatus(memchart, frame, top, left) == 0
                  tries = tries + 1;
@@ -146,8 +150,8 @@ function [res, totalTarg, totalDis] = createStimulus(sHeight, sWidth, dim, targC
     end
     
     %Finally we display the canvas in the specified axes handle
-    xl = [1/(2*sWidth), 1 - 1/(2*sWidth)];
-    yl = [1/(2*sHeight), 1 - 1/(2*sHeight)];
+    xl = [1/(2*fullWidth), 1 - 1/(2*fullWidth)];
+    yl = [1/(2*fullHeight), 1 - 1/(2*fullHeight)];
     
     axes(axHandle);
     hold on;

@@ -430,6 +430,7 @@ function ws_Callback(hObject, eventdata, handles)
 ws = str2double(get(handles.ws, 'string'));
 ws = max(10, min(ws, 100));
 set(handles.ws, 'string', num2str(ws));
+set(handles.hs, 'string', num2str(ws));
 
 
 % --- Executes during object creation, after setting all properties.
@@ -456,6 +457,7 @@ function hs_Callback(hObject, eventdata, handles)
 hs = str2double(get(handles.hs, 'string'));
 hs = max(10, min(hs, 100));
 set(handles.hs, 'string', num2str(hs));
+set(handles.ws, 'string', num2str(hs));
 
 
 % --- Executes during object creation, after setting all properties.
@@ -476,6 +478,7 @@ function previewButton_Callback(hObject, eventdata, handles)
 % hObject    handle to previewButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+saveDataToFile(hObject, eventdata, handles);
 saveAllDrawingsToFile();
 figure(previewTd);
 
