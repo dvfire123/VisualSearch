@@ -47,8 +47,7 @@ end
 function initBoxes(handles)
 global inputs;
 
-inputs = getappdata(beginTest, 'inputs');
-set(beginTest, 'visible', 'off');
+inputs = getappdata(0, 'inputs');
 
 global dim NT ND;
 global nCopies;
@@ -102,7 +101,7 @@ if ~exist(latestData, 'file')
 end
 
 %Load the user inputs
-inputs = getappdata(beginTest, 'inputs');
+inputs = getappdata(0, 'inputs');
 set(beginTest, 'visible', 'off');
 loadInputs(handles, inputs);
 
@@ -479,6 +478,7 @@ function previewButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 saveAllDrawingsToFile();
+figure(previewTd);
 
 
 % --- Executes on button press in beginButton.

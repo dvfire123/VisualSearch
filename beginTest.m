@@ -271,6 +271,7 @@ function goButton_Callback(hObject, eventdata, handles)
 saveDataToFile(hObject, eventdata, handles);
 
 %Then proceed
+close;
 figure(drawingHub);
 
 
@@ -330,7 +331,7 @@ inputs{6} = numTrials;
 inputs{7} = hSquish;
 inputs{8} = wSquish;
 
-setappdata(gcf, 'inputs', inputs);
+setappdata(0, 'inputs', inputs);
 
 function loadInputs(handles, inputs)
 set(handles.fn, 'string', inputs{1});

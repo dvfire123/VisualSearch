@@ -59,8 +59,7 @@ sWidth = 600;
 bgColour = [1 1 1]; %white
 minDist = ceil(dim/4);
 
-inputs = getappdata(beginTest, 'inputs');
-set(beginTest, 'visible', 'off');
+inputs = getappdata(0, 'inputs');
 targCell = getappdata(0, 'targCell');    %could be more than one target
 disCell = getappdata(0, 'disCell');      %could be more than one distractor
 targCVec = getappdata(0, 'tcCell');

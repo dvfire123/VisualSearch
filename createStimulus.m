@@ -1,4 +1,4 @@
-function res = createStimulus(sHeight, sWidth, dim, targCell, disCell, ...
+function [res, totalTarg, totalDis] = createStimulus(sHeight, sWidth, dim, targCell, disCell, ...
     targC, disC, nCopies, p, minDist, bgColour, axHandle, invTarg)
     %This function generates the stimulus image for the actual test
     
@@ -17,19 +17,12 @@ function res = createStimulus(sHeight, sWidth, dim, targCell, disCell, ...
     %axHandle: the axes handle in which to place the stimulus
     
     %RETURNS: whether target 1/2 are in the drawing or not
-    MAX_TRIES = 1000;
+    MAX_TRIES = 500;
     
     [~, numTarg] = size(targCell);
     [~, numDis] = size(disCell);
     numPics = numTarg + numDis*nCopies;
     frameSize = dim + 2*minDist;
-    minSize = frameSize*frameSize*numPics;
-    
-    if minSize > sHeight*sWidth
-       res = 0;
-       disp('Drawings cannot fit onto the stimulus!\n');
-       return;
-    end
     
     %To make sure the layout is randomly different each time
     rand('twister', 100*sum(clock));
@@ -45,12 +38,21 @@ function res = createStimulus(sHeight, sWidth, dim, targCell, disCell, ...
     end
     
     %first let's display the target(s)
+    totalTarg = 0;
+    totalDis = 0;
     targCount = 0;
     res = 0;
     while targCount < numTarg
        targCount = targCount + 1;
        targ = targCell{targCount};
+       
+       if isZeroMatrix(targ - ones(dim, dim)) == 1
+           %blank drawing is ignored
+           continue;
+       end
+       
        c = targC{targCount};
+       totalTarg = totalTarg + 1;
        
        if invTarg == 1
            targ = flipdim(targ, 1);
@@ -93,7 +95,14 @@ function res = createStimulus(sHeight, sWidth, dim, targCell, disCell, ...
     %Next let's display the distractors:
     for n = 1:numDis
         dis = disCell{n};
+        
+        if isZeroMatrix(dis - ones(dim, dim)) == 1
+           %blank drawing is ignored
+           continue;
+        end
+        
         c = disC{n};
+        totalDis = totalDis + 1;
         
         for k = 1:nCopies
             %We first need to randomly rotate each of the distractors
