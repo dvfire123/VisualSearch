@@ -45,9 +45,22 @@ function [res, totalTarg, totalDis] = createStimulus(fullHeight, sHeight, fullWi
     totalDis = 0;
     targCount = 0;
     res = 0;
-    p = 1-sqrt(1-q);
-    while targCount < numTarg
-       targCount = targCount + 1;
+    
+    %Count how many targets are there
+    for i = 1:numTarg
+        targ = targCell{i};
+        if isZeroMatrix(targ - ones(dim, dim)) == 0
+           totalTarg = totalTarg + 1;
+       end
+    end
+    
+    if targCount == 1
+        p = q;
+    else
+        p = 1-sqrt(1-q);
+    end
+    
+    for targCount = 1:numTarg
        targ = targCell{targCount};
        
        if isZeroMatrix(targ - ones(dim, dim)) == 1
@@ -56,7 +69,6 @@ function [res, totalTarg, totalDis] = createStimulus(fullHeight, sHeight, fullWi
        end
        
        c = targC{targCount};
-       totalTarg = totalTarg + 1;
        
        if invTarg == 1
            targ = flipdim(targ, 1);
