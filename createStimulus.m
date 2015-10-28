@@ -21,7 +21,6 @@ function [res, totalTarg, totalDis] = createStimulus(sHeight, sWidth, dim, targC
     
     [~, numTarg] = size(targCell);
     [~, numDis] = size(disCell);
-    numPics = numTarg + numDis*nCopies;
     frameSize = dim + 2*minDist;
     
     %To make sure the layout is randomly different each time

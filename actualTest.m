@@ -53,18 +53,22 @@ function actualTest_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to actualTest (see VARARGIN)
 global targCVec disCVec targCell disCell dispTime;
 global FULL_HEIGHT FULL_WIDTH sHeight sWidth minDist bgColour dim;
-global nCopies prob numTrials;
+global nCopies prob numTrials numTarg numDis NT ND;
 global dispTimer timeLeft;
 global outFile correct totTime;
 
 set(handles.yesButton, 'visible', 'off');
 set(handles.noButton, 'visible', 'off');
 
+%Note: DO NOT Change!
 dim = 20;
+NT = 2;
+ND = 6;
 FULL_HEIGHT = 400;
 FULL_WIDTH = 600;
 bgColour = [1 1 1]; %white
 minDist = ceil(dim/4);
+%End Note
 
 %Load parameters
 inputs = getappdata(0, 'inputs');
@@ -86,11 +90,10 @@ sWidth = FULL_WIDTH*ws/100;
 correct = 0;
 totTime = 0;
 
-%plot the targets
-[~, numTarg] = size(targCell);
-[~, numDis] = size(disCell);
+[numTarg, numDis] = countDrawings();
 
-for num = 1:numTarg
+%plot the targets
+for num = 1:NT
    targ = flipdim(targCell{num}, 1);
    c = targCVec{num};
    if num == 1
@@ -127,24 +130,24 @@ outFile = fullfile(resFolder, fileName);
 
 %Parameters for each experiment
 fid = fopen(outFile, 'at');
-fprintf(fid, 'Name: %s, %s\n', ln, fn);
+fprintf(fid, 'Name %s, %s\n', ln, fn);
 fprintf(fid, '%s\n', datestr(now));
 
-fprintf(fid, '\nTest Parameters:\n');
-fprintf(fid, 'Maximum stimulus height (no. of dots): %d\n', FULL_HEIGHT);
-fprintf(fid, 'Maximum stimulus height (no. of dots): %d\n', FULL_WIDTH);
-fprintf(fid, 'Actual stimulus height (no. of dots): %d\n', sHeight);
-fprintf(fid, 'Actual stimulus width (no. of dots): %d\n', sWidth);
-fprintf(fid, 'Percent of full height used: %f\n', hs);
-fprintf(fid, 'Percent of full width used: %f\n', ws);
+fprintf(fid, '\nTest Parameters\n');
+fprintf(fid, 'Maximum stimulus height (no. of dots) %d\n', FULL_HEIGHT);
+fprintf(fid, 'Maximum stimulus height (no. of dots) %d\n', FULL_WIDTH);
+fprintf(fid, 'Actual stimulus height (no. of dots) %d\n', sHeight);
+fprintf(fid, 'Actual stimulus width (no. of dots) %d\n', sWidth);
+fprintf(fid, 'Percent of full height used %f\n', hs);
+fprintf(fid, 'Percent of full width used %f\n', ws);
 
-fprintf(fid, 'Number of targets: %d\n', numTarg);
-fprintf(fid, 'Number of distractors: %d\n', numDis);
-fprintf(fid, 'Target/Distractor dots per dimension: %d\n', dim);
-fprintf(fid, 'Probability of target presence: %f\n', prob);
-fprintf(fid, 'Number of copies of each distractor: %d\n', nCopies);
-fprintf(fid, 'Number of trials: %d\n', numTrials);
-fprintf(fid, 'Display Time for each stimulus: %f sec\n', dispTime);
+fprintf(fid, 'Number of Targets %d\n', numTarg);
+fprintf(fid, 'Number of Distractors %d\n', numDis);
+fprintf(fid, 'Target/Distractor dots per dimension %d\n', dim);
+fprintf(fid, 'Probability of target presence %f\n', prob);
+fprintf(fid, 'Number of copies of each distractor %d\n', nCopies);
+fprintf(fid, 'Number of trials %d\n', numTrials);
+fprintf(fid, 'Display Time for each stimulus %f sec\n', dispTime);
 fprintf(fid, '\n');
 fclose(fid);
 
@@ -240,7 +243,7 @@ if res == isYes
     corrStr = 'correct';
 end
 
-s = sprintf('Trial %d of %d\tUser: %s\tActual: %s (%s)\tResponse time: %f sec',...
+s = sprintf('Trial %d of %d\tUser %s\tActual %s (%s)\tResponse time %f sec',...
     testNum, numTrials, userStr, resStr, corrStr, timeSpent);
 fid = fopen(outFile, 'at');
 fprintf(fid, '%s', s);
@@ -255,8 +258,8 @@ if testNum > numTrials
    avgTime = totTime/numTrials;
    fid = fopen(outFile, 'at');
    fprintf(fid, '\nYou got %d out of %d correct\n', correct, numTrials);
-   fprintf(fid, 'Hit Rate: %f percent\n', hitRate);
-   fprintf(fid, 'Average response time: %f sec\n', avgTime);
+   fprintf(fid, 'Hit Rate %f percent\n', hitRate);
+   fprintf(fid, 'Average response time %f sec\n', avgTime);
    fprintf(fid, '----------\n');
    fclose(fid);
    
@@ -367,3 +370,24 @@ function noButton_Callback(hObject, eventdata, handles)
 % hObject    handle to noButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+function [numTarg, numDis] = countDrawings()
+global targCell disCell dim NT ND;
+numTarg = 0;
+numDis = 0;
+
+for i = 1:NT
+    drawing = targCell{i};
+    if isZeroMatrix(drawing-ones(dim, dim)) == 0
+        numTarg = numTarg + 1;
+    end
+end
+
+for i = 1:ND
+    drawing = disCell{i};
+    if isZeroMatrix(drawing-ones(dim, dim)) == 0
+        numDis = numDis + 1;
+    end
+end
+
+
