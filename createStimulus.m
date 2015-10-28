@@ -1,5 +1,5 @@
 function [res, totalTarg, totalDis] = createStimulus(fullHeight, sHeight, fullWidth, sWidth, dim,...
-    targCell, disCell, targC, disC, nCopies, p, minDist, bgColour, axHandle, invTarg)
+    targCell, disCell, targC, disC, nCopies, q, minDist, bgColour, axHandle, invTarg)
     %This function generates the stimulus image for the actual test
     
     %INPUTS:
@@ -45,6 +45,7 @@ function [res, totalTarg, totalDis] = createStimulus(fullHeight, sHeight, fullWi
     totalDis = 0;
     targCount = 0;
     res = 0;
+    p = 1-sqrt(1-q);
     while targCount < numTarg
        targCount = targCount + 1;
        targ = targCell{targCount};

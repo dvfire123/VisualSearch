@@ -286,7 +286,7 @@ global FULL_HEIGHT FULL_WIDTH;
 axes(handles.stim);
 delete(get(handles.stim, 'Children'));
 res = createStimulus(FULL_HEIGHT, sHeight, FULL_WIDTH, sWidth, dim, targCell, disCell,...
-        targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim, 1);
+        targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim, 0);
     
 set(handles.stimulusLabel, 'string', 'Stimulus');
 
