@@ -309,10 +309,10 @@ set(handles.yesButton, 'Enable', 'off');
 set(handles.noButton, 'Enable', 'off');
 
 axes(handles.stim);
-delete(get(handles.stim, 'Childre'));
+delete(get(handles.stim, 'Children'));
 drawCross(handles);
 set(handles.coverLabel, 'visible', 'off');
-set(handles.stimulusLabel, 'string', 'Press the space bar to show stimulus');
+set(handles.stimulusLabel, 'string', 'Please fixate on the cross; press the space bar to show stimulus');
 
 %Display timer callbacks
 function dispTimeGoing(hObject, eventdata, handles)

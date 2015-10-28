@@ -488,6 +488,10 @@ function beginButton_Callback(hObject, eventdata, handles)
 saveDataToFile(hObject, eventdata, handles);
 saveAllDrawingsToFile();
 
+%Start the test!
+close;
+figure(actualTest);
+
 
 % --- Executes on button press in clearButton.
 function clearButton_Callback(hObject, eventdata, handles)
