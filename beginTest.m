@@ -162,7 +162,7 @@ function nCopies_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of nCopies as text
 %        str2double(get(hObject,'String')) returns contents of nCopies as a double
 nCopies = str2double(get(handles.nCopies, 'string'));
-nCopies = max(0, nCopies);
+nCopies = max(1, nCopies);
 set(handles.nCopies, 'string', num2str(nCopies));
 
 
@@ -268,7 +268,6 @@ function goButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 %First save the data
-clearAnother();
 saveDataToFile(hObject, eventdata, handles);
 
 %Then proceed
@@ -280,7 +279,6 @@ function quitButton_Callback(hObject, eventdata, handles)
 % hObject    handle to quitButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-clearAnother();
 close;
 
 
@@ -356,13 +354,6 @@ readInputs(handles);
 [fileName, file]= saveInputsToFile(inputs, dataFolder);
 setappdata(gcbf, 'dataFileName', fileName);
 updateLatestFile(file);
-
-function clearAnother()
-another = getappdata(0, 'another');
-if ~isempty(another)
-    rmappdata(0, 'another');
-end
-
 
 function ws_Callback(hObject, eventdata, handles)
 % hObject    handle to ws (see GCBO)

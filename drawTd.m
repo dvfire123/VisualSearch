@@ -47,7 +47,7 @@ function initDrawBox(handles)
 inputs = getappdata(beginTest, 'inputs');
 set(beginTest, 'visible', 'off');
 
-global targCVec disCVec targCell disCell isTarg num;
+global targCVec disCVec targCell disCell isTarg;
 global dim NT ND;
 global nCopies
 
@@ -60,8 +60,11 @@ isTarg = 1;
 setappdata(0, 'isTarg', isTarg);
 
 num = 1;
+
+%Note: Please do not change these parameters
 NT = 2;
-ND = 10;
+ND = 6; 
+%End Note
 
 nCopies = inputs{4};
 
@@ -91,7 +94,6 @@ function drawTd_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to drawTd (see VARARGIN)
 global num dim NT isTarg;
-another = getappdata(0, 'another');
 
 if isempty(another)
     if ~isempty(get(handles.td, 'Children'))
