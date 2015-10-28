@@ -102,7 +102,6 @@ end
 
 %Load the user inputs
 inputs = getappdata(0, 'inputs');
-set(beginTest, 'visible', 'off');
 loadInputs(handles, inputs);
 
 %Load the drawings
@@ -147,8 +146,7 @@ inputs{6} = numTrials;
 inputs{7} = hSquish;
 inputs{8} = wSquish;
 
-setappdata(beginTest, 'inputs', inputs);
-set(beginTest, 'visible', 'off');
+setappdata(0, 'inputs', inputs);
 
 function loadInputs(handles, inputs)
 set(handles.p, 'string', inputs{3});
@@ -168,8 +166,7 @@ function saveDataToFile(hObject, eventdata, handles)
 global inputs dataFolder;
 readInputs(handles);
 [fileName, file]= saveInputsToFile(inputs, dataFolder);
-setappdata(beginTest, 'dataFileName', fileName);
-set(beginTest, 'visible', 'off');
+setappdata(0, 'dataFileName', fileName);
 updateLatestFile(file);
 
 
@@ -186,10 +183,11 @@ else
 end
 
 file = fullfile(latestDFolder, fileName);
+drawHandle = extractfield(handles, field);
+
 if ~exist(file, 'file')
     %Create the file
     fid = fopen(file, 'wt+');
-    fprintf(fid, '%d', -1);
     fclose(fid);
     
     %Store empty targ to the appropriate drawings
@@ -204,8 +202,10 @@ end
 fid = fopen(file, 'r');
 B = fscanf(fid, '%f');
 if numel(B) == 0 || B(1) == -1
-    %Indicates a blank drawing, so load nothing
+    %Indicates a blank drawing, so load nothing and delete the
+    %corresponding box
     fclose(fid);
+    delete(get(drawHandle, 'Children'));
     
     %Store empty targ to the appropriate drawings
     drawing = ones(dim, dim);
@@ -228,7 +228,6 @@ colour = B(Bindx+1:Bindx+3);
 saveDrawing(drawing, colour, isTarg, num);
 
 %Plot the drawing
-drawHandle = extractfield(handles, field);
 drawing = flipdim(drawing, 1);
 imHandle = displayTd(drawing, colour, drawHandle);
 set(imHandle, 'HitTest', 'off');
@@ -504,10 +503,27 @@ choice = questdlg('Are you sure you want to clear all drawings?', ...
 % Handle response
 switch choice
     case 'Yes'
-        disp('Yes Selected!');
+        clearAllDrawings(handles);
     case 'No'
-        disp('No Selected!');
+        return;
 end
+
+function clearAllDrawings(handles)
+global dim NT ND;
+
+drawing = ones(dim, dim);
+c = [0, 0, 0];
+
+for i = 1:NT
+    saveDrawing(drawing, c, 1, i);
+end
+
+for i = 1:ND
+    saveDrawing(drawing, c, 0, i);
+end
+
+saveAllDrawingsToFile();
+loadAllDrawings(handles);
 
 %Helper regarding drawing targets
 function spawnDrawBox(isTarg, num)

@@ -353,7 +353,7 @@ function saveDataToFile(hObject, eventdata, handles)
 global inputs dataFolder;
 readInputs(handles);
 [fileName, file]= saveInputsToFile(inputs, dataFolder);
-setappdata(gcbf, 'dataFileName', fileName);
+setappdata(0, 'dataFileName', fileName);
 updateLatestFile(file);
 
 function ws_Callback(hObject, eventdata, handles)

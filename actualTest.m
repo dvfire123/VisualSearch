@@ -67,8 +67,7 @@ bgColour = [1 1 1]; %white
 minDist = ceil(dim/4);
 
 %Load parameters
-inputs = getappdata(beginTest, 'inputs');
-close(beginTest);
+inputs = getappdata(0, 'inputs');
 targCell = getappdata(0, 'targCell');    %could be more than one target
 disCell = getappdata(0, 'disCell');      %could be more than one distractor
 targCVec = getappdata(0, 'tcCell');

@@ -88,8 +88,6 @@ else
 end
 
 %Store the current drawing
-set(handles.td, 'UserData', drawing);
-set(handles.colourButton, 'UserData', colour);
 imHandle = displayTd(drawing, colour, handles.td);
 set(imHandle, 'HitTest', 'off');
 
@@ -119,10 +117,7 @@ function td_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to td (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-disp('td clicked!');
-global dim;
-drawing = get(hObject, 'UserData');
-colour = get(handles.colourButton, 'UserData');
+global dim drawing colour;
 
 hold on;
 delete(get(hObject, 'Children'));
@@ -148,11 +143,10 @@ function colourButton_Callback(hObject, eventdata, handles)
 % hObject    handle to colourButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-oldC = get(hObject, 'UserData');
-c = uisetcolor(oldC);   %if user press 'Cancel', c = oldC
-set(hObject, 'UserData', c);
+global colour drawing;
+c = uisetcolor(colour);   %if user press 'Cancel', c = oldC
+colour = c;
 axes(handles.td);
-drawing = get(handles.td, 'UserData');
 
 hold on;
 delete(get(handles.td, 'Children'));
@@ -162,11 +156,9 @@ saveDrawing(handles, drawing, c);
 
 %Helper to clear
 function clearDrawing(handles)
-global dim;
+global dim drawing;
 axes(handles.td);
 drawing = ones(dim, dim);
-set(handles.td, 'UserData', drawing);
-delete(get(handles.td, 'Children'));
 
 % --- Executes on button press in clearButton.
 function clearButton_Callback(hObject, eventdata, handles)
@@ -177,35 +169,31 @@ clearDrawing(handles);
 
 %Helper Functions
 %Save the relevant target data
-function saveTarget(handles, targ, targColour, targNum)
+function saveTarget(targ, targColour, targNum)
 global targCVec targCell drawing colour;
 drawing = targ;
 colour = targColour;
-set(handles.td, 'UserData', targ);
-set(handles.colourButton, 'UserData', targColour);
 targCVec{targNum} = targColour;
 targCell{targNum} = targ;
 setappdata(0, 'targCell', targCell);
 setappdata(0, 'tcCell', targCVec);
 
 %Save the relevant distractor data
-function saveDistractor(handles, dis, disColour, disNum)
+function saveDistractor(dis, disColour, disNum)
 global disCVec disCell drawing colour;
 drawing = dis;
 colour = disColour;
-set(handles.td, 'UserData', dis);
-set(handles.colourButton, 'UserData', disColour);
 disCVec{disNum} = disColour;
 disCell{disNum} = dis;
 setappdata(0, 'disCell', disCell);
 setappdata(0, 'dcCell', disCVec);
 
-function saveDrawing(handles, drawing, colour)
+function saveDrawing(drawing, colour)
 global isTarg num;
 if isTarg == 1
-    saveTarget(handles, drawing, colour, num);
+    saveTarget(drawing, colour, num);
 else
-    saveDistractor(handles, drawing, colour, num);
+    saveDistractor(drawing, colour, num);
 end
 
 function saveDrawingToFile()
@@ -220,7 +208,7 @@ file = fullfile(latestDFolder, fileName);
 fid = fopen(file, 'wt+');
 if isZeroMatrix(drawing - ones(dim, dim)) == 1
     %blank drawing
-    fprintf(fid, '%d', -1);
+    %Do nothing
 else
     %The drawing is stored as a column vector of 0 and 1's
     for i = 1:dim
@@ -306,7 +294,7 @@ for i = 1:dim
 end
 
 colour = B(Bindx+1:Bindx+3);
-saveDrawing(handles, drawing, colour);
+saveDrawing(drawing, colour);
 
 drawing = flipdim(drawing, 1);
 imHandle = displayTd(drawing, colour, handles.td);
@@ -318,9 +306,8 @@ function doneButton_Callback(hObject, eventdata, handles)
 % hObject    handle to doneButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-drawing = get(handles.td, 'UserData');
-colour = get(handles.colourButton, 'UserData');
-saveDrawing(handles, drawing, colour);
+global drawing colour;
+saveDrawing(drawing, colour);
 saveDrawingToFile();
 close;
 figure(drawingHub);
