@@ -312,6 +312,8 @@ updateLatestFile(file);
 function readInputs(handles)
 global inputs;
 
+fn = get(handles.fn, 'string');
+ln = get(handles.ln, 'string');
 p = get(handles.p, 'string');
 nCopies = get(handles.nCopies, 'string');
 dt = get(handles.dt, 'string');
@@ -319,6 +321,8 @@ numTrials = get(handles.numTrials, 'string');
 hSquish = get(handles.hs, 'string');
 wSquish = get(handles.ws, 'string');
 
+inputs{1} = fn;
+inputs{2} = ln;
 inputs{3} = p;
 inputs{4} = nCopies;
 inputs{5} = dt;
@@ -329,6 +333,8 @@ inputs{8} = wSquish;
 setappdata(gcf, 'inputs', inputs);
 
 function loadInputs(handles, inputs)
+set(handles.fn, 'string', inputs{1});
+set(handles.ln, 'string', inputs{2});
 set(handles.p, 'string', inputs{3});
 set(handles.nCopies, 'string', inputs{4});
 set(handles.dt, 'string', inputs{5});

@@ -22,7 +22,7 @@ function varargout = drawingHub(varargin)
 
 % Edit the above text to modify the response to help drawingHub
 
-% Last Modified by GUIDE v2.5 28-Oct-2015 13:38:40
+% Last Modified by GUIDE v2.5 28-Oct-2015 14:40:24
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -45,38 +45,23 @@ end
 
 %Helper to initialize all the draws
 function initDrawBox(handles)
+global inputs;
+
 inputs = getappdata(beginTest, 'inputs');
 set(beginTest, 'visible', 'off');
 
-global targCVec disCVec targCell disCell;
 global dim NT ND;
-global nCopies
-
-dim = 20;
-targCVec = {[0, 0, 0]};   %black by default
-disCVec = targCVec;
-
-num = 1;
+global nCopies;
+nCopies = inputs{4};
 
 %Note: Please do not change these parameters
+dim = 20;
 NT = 2;
 ND = 6; 
 %End Note
 
-nCopies = inputs{4};
-
 loadAllDrawings(handles);
-emptyTarg = ones(dim, dim);
-emptyDistractor = ones(dim, dim);
-targCell = {emptyTarg};
-disCell = {emptyDistractor};
-setappdata(0, 'targCell', targCell);    %could be more than one target
-setappdata(0, 'disCell', disCell);      %could be more than one distractor
-setappdata(0, 'tcCell', targCVec);
-setappdata(0, 'dcCell', disCVec);
 
-%Store the current drawing
-set(handles.td, 'UserData', targCell{num});
 
 % --- Executes just before drawingHub is made visible.
 function drawingHub_OpeningFcn(hObject, eventdata, handles, varargin)
@@ -120,7 +105,7 @@ set(beginTest, 'visible', 'off');
 loadInputs(handles, inputs);
 
 %Load the drawings
-
+initDrawBox(handles);
 
 % Choose default command line output for drawingHub
 handles.output = hObject;
@@ -521,3 +506,59 @@ switch choice
     case 'No'
         disp('No Selected!');
 end
+
+
+% --- Executes on mouse press over axes background.
+function targ1_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to targ1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on mouse press over axes background.
+function targ2_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to targ2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on mouse press over axes background.
+function dis1_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to dis1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on mouse press over axes background.
+function dis2_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to dis2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on mouse press over axes background.
+function dis3_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to dis3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on mouse press over axes background.
+function dis4_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to dis4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on mouse press over axes background.
+function dis5_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to dis5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on mouse press over axes background.
+function dis6_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to dis6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
