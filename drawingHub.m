@@ -44,7 +44,7 @@ end
 % End initialization code - DO NOT EDIT
 
 %Helper to initialize all the draws
-function initDrawBox(handles)
+function initBoxes(handles)
 global inputs;
 
 inputs = getappdata(beginTest, 'inputs');
@@ -74,6 +74,8 @@ global latestDFolder latestData dataFolder inputs;
 global targCVec disCVec targCell disCell;
 global dim NT ND;
 global nCopies;
+
+setappdata(0, 'drawing', 0);
 
 [folder, ~, ~] = fileparts(mfilename('fullpath'));
 if isdeployed
@@ -105,7 +107,7 @@ set(beginTest, 'visible', 'off');
 loadInputs(handles, inputs);
 
 %Load the drawings
-initDrawBox(handles);
+initBoxes(handles);
 
 % Choose default command line output for drawingHub
 handles.output = hObject;
@@ -176,13 +178,12 @@ updateLatestFile(file);
 function loadDrawing(handles, isTarg, num)
 %Loads the latest drawing to the appropriate axes
 global latestDFolder dim;
-global targCVec disCVec targCell disCell;
 if isTarg == 1
     fileName = sprintf('t%s.pic', num2str(num));
     field = sprintf('targ%s', num2str(num));
 else
     fileName = sprintf('d%s.pic', num2str(num));
-    field = sprintf('targ%s', num2str(num));
+    field = sprintf('dis%s', num2str(num));
 end
 
 file = fullfile(latestDFolder, fileName);
@@ -229,6 +230,7 @@ saveDrawing(drawing, colour, isTarg, num);
 
 %Plot the drawing
 drawHandle = extractfield(handles, field);
+drawing = flipdim(drawing, 1);
 imHandle = displayTd(drawing, colour, drawHandle);
 set(imHandle, 'HitTest', 'off');
 
@@ -286,7 +288,7 @@ end
 
 file = fullfile(latestDFolder, fileName);
 fid = fopen(file, 'wt+');
-if isZeroMatrix(drawing) == 1
+if isZeroMatrix(drawing - ones(dim, dim)) == 1
     %blank drawing
     fprintf(fid, '%d', -1);
 else
@@ -507,12 +509,25 @@ switch choice
         disp('No Selected!');
 end
 
+%Helper regarding drawing targets
+function spawnDrawBox(isTarg, num)
+%Opens the appropriate drawbox
+%only 1 draw box open at a time!
+isDrawing = getappdata(0, 'drawing');
+
+if isDrawing == 0
+    setappdata(0, 'drawing', 1);
+    setappdata(0, 'isTarg', isTarg);
+    setappdata(0, 'num', num);
+    figure(drawTd);
+end
 
 % --- Executes on mouse press over axes background.
 function targ1_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to targ1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(1, 1);
 
 
 % --- Executes on mouse press over axes background.
@@ -520,6 +535,7 @@ function targ2_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to targ2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(1, 2);
 
 
 % --- Executes on mouse press over axes background.
@@ -527,6 +543,7 @@ function dis1_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to dis1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(0, 1);
 
 
 % --- Executes on mouse press over axes background.
@@ -534,6 +551,7 @@ function dis2_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to dis2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(0, 2);
 
 
 % --- Executes on mouse press over axes background.
@@ -541,6 +559,7 @@ function dis3_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to dis3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(0, 3);
 
 
 % --- Executes on mouse press over axes background.
@@ -548,6 +567,7 @@ function dis4_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to dis4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(0, 4);
 
 
 % --- Executes on mouse press over axes background.
@@ -555,6 +575,7 @@ function dis5_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to dis5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(0, 5);
 
 
 % --- Executes on mouse press over axes background.
@@ -562,3 +583,4 @@ function dis6_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to dis6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(0, 6);

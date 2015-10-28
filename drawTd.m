@@ -43,43 +43,6 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-function initDrawBox(handles)
-inputs = getappdata(beginTest, 'inputs');
-set(beginTest, 'visible', 'off');
-
-global targCVec disCVec targCell disCell isTarg;
-global dim NT ND;
-global nCopies
-
-dim = 20;
-targCVec = {[0, 0, 0]};   %black by default
-disCVec = targCVec;
-set(handles.colourButton, 'UserData', targCVec{1});
-
-isTarg = 1;
-setappdata(0, 'isTarg', isTarg);
-
-num = 1;
-
-%Note: Please do not change these parameters
-NT = 2;
-ND = 6; 
-%End Note
-
-nCopies = inputs{4};
-
-%Initialize the targest and the drawings
-emptyTarg = ones(dim, dim);
-emptyDistractor = ones(dim, dim);
-targCell = {emptyTarg};
-disCell = {emptyDistractor};
-setappdata(0, 'targCell', targCell);    %could be more than one target
-setappdata(0, 'disCell', disCell);      %could be more than one distractor
-setappdata(0, 'tcCell', targCVec);
-setappdata(0, 'dcCell', disCVec);
-
-%Store the current drawing
-set(handles.td, 'UserData', targCell{num});
 
 % --- Executes just before drawTd is made visible.
 function drawTd_OpeningFcn(hObject, eventdata, handles, varargin)
@@ -88,23 +51,32 @@ function drawTd_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to drawTd (see VARARGIN)
-global num dim NT isTarg;
+global isTarg num drawing colour;
+global targCell disCell targCVec disCVec;
+global dim;
+dim = 20;   %DO NOT CHANGE THIS!
 
-if isempty(another)
-    if ~isempty(get(handles.td, 'Children'))
-        delete(get(handles.td, 'Children'));
-    end
-    initDrawBox(handles);
-elseif another == 1
-    axes(handles.td);
-    drawing = ones(dim, dim);
-    set(handles.td, 'UserData', drawing);
-    delete(get(handles.td, 'Children'));
-    num = num + 1;
+isTarg = getappdata(0, 'isTarg');
+num = getappdata(0, 'num');
+
+targCell = getappdata(0, 'targCell');    
+disCell = getappdata(0, 'disCell');      
+targCVec = getappdata(0, 'tcCell');
+disCVec = getappdata(0, 'dcCell');
+
+if isTarg == 1;
+    drawing = targCell{num};
+    colour = targCVec{num};
 else
-    %Target drawing done.  Now let the users design the distractors
-    changeToDis(hObject, eventdata, handles);
+    drawing = disCell{num};
+    colour = disCVec{num};
 end
+
+%Store the current drawing
+set(handles.td, 'UserData', drawing);
+set(handles.colourButton, 'UserData', colour);
+imHandle = displayTd(drawing, colour, handles.td);
+set(imHandle, 'HitTest', 'off');
 
 % Choose default command line output for drawTd
 handles.output = hObject;
@@ -217,13 +189,6 @@ else
 end
 %End Helper Functions
 
-% --- Executes on button press in previewButton.
-function previewButton_Callback(hObject, eventdata, handles)
-% hObject    handle to previewButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-figure(previewTd);
-
 
 % --- Executes on button press in saveButton.
 function saveButton_Callback(hObject, eventdata, handles)
@@ -304,25 +269,8 @@ function doneButton_Callback(hObject, eventdata, handles)
 % hObject    handle to doneButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global targCVec disCVec targCell disCell isTarg num nCopies NT ND;
 drawing = get(handles.td, 'UserData');
 colour = get(handles.colourButton, 'UserData');
 saveDrawing(handles, drawing, colour);
-if (isTarg == 1 && num < NT) || (isTarg == 0 && num < ND)
-    figure(drawNextBox);
-elseif isTarg == 1 && num >= NT
-   %We have reached the limit of drawing the target
-   %commencing drawing of distractor now
-   changeToDis(hObject, eventdata, handles);
-else
-    close;
-    figure(actualTest);
-end
-
-function changeToDis(hObject, eventdata, handles)
-global isTarg num;
-clearDrawing(handles);
-isTarg = 0; 
-setappdata(0, 'isTarg', isTarg);
-num = 1;
-set(handles.drawPrompt, 'string', 'Draw Your Distractor Below:');
+close;
+figure(drawingHub);
