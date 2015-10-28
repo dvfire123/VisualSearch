@@ -22,7 +22,7 @@ function varargout = drawingHub(varargin)
 
 % Edit the above text to modify the response to help drawingHub
 
-% Last Modified by GUIDE v2.5 27-Oct-2015 22:33:06
+% Last Modified by GUIDE v2.5 28-Oct-2015 13:38:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -51,7 +51,10 @@ function drawingHub_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to drawingHub (see VARARGIN)
-global latestDFolder inputs;
+global latestDFolder latestData dataFolder inputs;
+global targCVec disCVec targCell disCell isTarg;
+global dim NT ND;
+global nCopies;
 
 [folder, ~, ~] = fileparts(mfilename('fullpath'));
 if isdeployed
@@ -60,9 +63,21 @@ end
 
 %The folder to store the latest drawings
 latestDFolder = fullfile(folder, 'SysFiles');
-
 if ~exist(latestDFolder, 'dir')
    mkdir(latestDFolder); 
+end
+
+%The folder to save to as the latest test params used
+dataFolder = fullfile(folder, 'UserData');
+if ~exist(dataFolder, 'dir')
+   mkdir(dataFolder); 
+end
+
+latestDataFile = 'latest.txt';
+latestData = fullfile(dataFolder, latestDataFile);
+if ~exist(latestData, 'file')
+   fid = fopen(latestData, 'wt+');
+   fclose(fid);
 end
 
 %Load the user inputs
@@ -91,11 +106,10 @@ function varargout = drawingHub_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 %%-----Helpers-----%%
+%%--Input Readers--%%
 function readInputs(handles)
 global inputs;
 
-fn = get(handles.fn, 'string');
-ln = get(handles.ln, 'string');
 p = get(handles.p, 'string');
 nCopies = get(handles.nCopies, 'string');
 dt = get(handles.dt, 'string');
@@ -103,8 +117,6 @@ numTrials = get(handles.numTrials, 'string');
 hSquish = get(handles.hs, 'string');
 wSquish = get(handles.ws, 'string');
 
-inputs{1} = fn;
-inputs{2} = ln;
 inputs{3} = p;
 inputs{4} = nCopies;
 inputs{5} = dt;
@@ -137,8 +149,11 @@ setappdata(beginTest, 'dataFileName', fileName);
 set(beginTest, 'visible', 'off');
 updateLatestFile(file);
 
+
+%%--Drawing Helpers--%%
 function loadDrawing(handles, isTarg, num)
-global latestDFolder;
+%Loads the latest drawing to the appropriate axes
+global latestDFolder dim;
 if isTarg == 1
     fileName = sprintf('t%s.pic', num2str(num));
     field = sprintf('targ%s', num2str(num));
@@ -148,8 +163,80 @@ else
 end
 
 file = fullfile(latestDFolder, fileName);
-A = extractfield(handles, field)
+if ~exist(file, 'file')
+    return;
+end
 
+%The file exists!  Read it
+%Assuming either the targ/dis is already saved or -1 for blank targ/dis
+fid = fopen(file, 'r');
+B = fscanf(fid, '%f');
+if B(1) == -1
+    %Indicates a blank drawing, so load nothing
+    fclose(fid);
+    return;
+end
+
+drawing = ones(dim, dim);
+Bindx = 0;
+
+for i = 1:dim
+    for j = 1:dim
+      Bindx = Bindx + 1;
+      drawing(i, j) = B(Bindx);
+    end
+end
+
+colour = B(Bindx+1:Bindx+3);
+saveDrawing(handles, drawing, colour);
+
+%Plot the drawing
+drawHandle = extractfield(handles, field);
+imHandle = displayTd(drawing, colour, drawHandle);
+set(imHandle, 'HitTest', 'off');
+
+function loadAllDrawings(handles)
+global NT ND;
+
+%Load all targets, if it exists
+for i = 1:NT
+    loadDrawing(handles, 1, i);
+end
+
+%Load all distractors, if it exists
+for i = 1:ND
+    loadDrawing(handles, 0, i);
+end
+
+
+%Save the relevant target data
+function saveTarget(handles, targ, targColour, targNum)
+global targCVec targCell;
+set(handles.td, 'UserData', targ);
+set(handles.colourButton, 'UserData', targColour);
+targCVec{targNum} = targColour;
+targCell{targNum} = targ;
+setappdata(0, 'targCell', targCell);
+setappdata(0, 'tcCell', targCVec);
+
+%Save the relevant distractor data
+function saveDistractor(handles, dis, disColour, disNum)
+global disCVec disCell;
+set(handles.td, 'UserData', dis);
+set(handles.colourButton, 'UserData', disColour);
+disCVec{disNum} = disColour;
+disCell{disNum} = dis;
+setappdata(0, 'disCell', disCell);
+setappdata(0, 'dcCell', disCVec);
+
+%Save the drawing data based on targ vs distractor
+function saveDrawing(handles, drawing, colour)
+global isTarg num;
+if isTarg == 1
+    saveTarget(handles, drawing, colour, num);
+else
+    saveDistractor(handles, drawing, colour, num);
+end
 %End Helpers
 
 function p_Callback(hObject, eventdata, handles)
