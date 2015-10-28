@@ -22,7 +22,7 @@ function varargout = actualTest(varargin)
 
 % Edit the above text to modify the response to help actualTest
 
-% Last Modified by GUIDE v2.5 26-Oct-2015 20:26:26
+% Last Modified by GUIDE v2.5 28-Oct-2015 17:08:23
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -157,14 +157,6 @@ handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
 
-%Now we have to set up the timer before displaying the stimulus
-waitTimer = timer;
-waitTimer.period = 1;
-set(waitTimer,'ExecutionMode','fixedrate','StartDelay',1);
-set(waitTimer, 'StartFcn', {@drawCross, handles});
-set(waitTimer, 'TimerFcn', {@countDown});
-set(waitTimer, 'StopFcn', {@waitTimeUp, handles});
-
 %Set up display timer, but of course don't start it until wait timer
 %is done
 dispTimer = timer;
@@ -282,8 +274,6 @@ height = FULL_HEIGHT/SHRINK_FACTOR;
 width = FULL_WIDTH/SHRINK_FACTOR;
 
 axes(handles.stim);
-delete(get(handles.stim, 'Children'));
-hold on;
 crossHandle = crossStimulus(height, width, handles.stim);
 
 
@@ -389,5 +379,3 @@ for i = 1:ND
         numDis = numDis + 1;
     end
 end
-
-
