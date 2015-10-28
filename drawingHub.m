@@ -43,6 +43,40 @@ else
 end
 % End initialization code - DO NOT EDIT
 
+%Helper to initialize all the draws
+function initDrawBox(handles)
+inputs = getappdata(beginTest, 'inputs');
+set(beginTest, 'visible', 'off');
+
+global targCVec disCVec targCell disCell;
+global dim NT ND;
+global nCopies
+
+dim = 20;
+targCVec = {[0, 0, 0]};   %black by default
+disCVec = targCVec;
+
+num = 1;
+
+%Note: Please do not change these parameters
+NT = 2;
+ND = 6; 
+%End Note
+
+nCopies = inputs{4};
+
+loadAllDrawings(handles);
+emptyTarg = ones(dim, dim);
+emptyDistractor = ones(dim, dim);
+targCell = {emptyTarg};
+disCell = {emptyDistractor};
+setappdata(0, 'targCell', targCell);    %could be more than one target
+setappdata(0, 'disCell', disCell);      %could be more than one distractor
+setappdata(0, 'tcCell', targCVec);
+setappdata(0, 'dcCell', disCVec);
+
+%Store the current drawing
+set(handles.td, 'UserData', targCell{num});
 
 % --- Executes just before drawingHub is made visible.
 function drawingHub_OpeningFcn(hObject, eventdata, handles, varargin)
@@ -52,7 +86,7 @@ function drawingHub_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to drawingHub (see VARARGIN)
 global latestDFolder latestData dataFolder inputs;
-global targCVec disCVec targCell disCell isTarg;
+global targCVec disCVec targCell disCell;
 global dim NT ND;
 global nCopies;
 
@@ -84,6 +118,9 @@ end
 inputs = getappdata(beginTest, 'inputs');
 set(beginTest, 'visible', 'off');
 loadInputs(handles, inputs);
+
+%Load the drawings
+
 
 % Choose default command line output for drawingHub
 handles.output = hObject;
@@ -154,6 +191,7 @@ updateLatestFile(file);
 function loadDrawing(handles, isTarg, num)
 %Loads the latest drawing to the appropriate axes
 global latestDFolder dim;
+global targCVec disCVec targCell disCell;
 if isTarg == 1
     fileName = sprintf('t%s.pic', num2str(num));
     field = sprintf('targ%s', num2str(num));
@@ -164,6 +202,15 @@ end
 
 file = fullfile(latestDFolder, fileName);
 if ~exist(file, 'file')
+    %Create the file
+    fid = fopen(file, 'wt+');
+    fprintf(fid, '%d', -1);
+    fclose(fid);
+    
+    %Store empty targ to the appropriate drawings
+    drawing = ones(dim, dim);
+    c = [0, 0, 0];  %black by default
+    saveDrawing(drawing, c, isTarg, num);
     return;
 end
 
@@ -174,6 +221,11 @@ B = fscanf(fid, '%f');
 if B(1) == -1
     %Indicates a blank drawing, so load nothing
     fclose(fid);
+    
+    %Store empty targ to the appropriate drawings
+    drawing = ones(dim, dim);
+    c = [0, 0, 0];  %black by default
+    saveDrawing(drawing, c, isTarg, num);
     return;
 end
 
@@ -188,7 +240,7 @@ for i = 1:dim
 end
 
 colour = B(Bindx+1:Bindx+3);
-saveDrawing(handles, drawing, colour);
+saveDrawing(drawing, colour, isTarg, num);
 
 %Plot the drawing
 drawHandle = extractfield(handles, field);
@@ -210,34 +262,74 @@ end
 
 
 %Save the relevant target data
-function saveTarget(handles, targ, targColour, targNum)
+function saveTarget(targ, targColour, targNum)
 global targCVec targCell;
-set(handles.td, 'UserData', targ);
-set(handles.colourButton, 'UserData', targColour);
 targCVec{targNum} = targColour;
 targCell{targNum} = targ;
 setappdata(0, 'targCell', targCell);
 setappdata(0, 'tcCell', targCVec);
 
 %Save the relevant distractor data
-function saveDistractor(handles, dis, disColour, disNum)
+function saveDistractor(dis, disColour, disNum)
 global disCVec disCell;
-set(handles.td, 'UserData', dis);
-set(handles.colourButton, 'UserData', disColour);
 disCVec{disNum} = disColour;
 disCell{disNum} = dis;
 setappdata(0, 'disCell', disCell);
 setappdata(0, 'dcCell', disCVec);
 
 %Save the drawing data based on targ vs distractor
-function saveDrawing(handles, drawing, colour)
-global isTarg num;
+function saveDrawing(drawing, colour, isTarg, num)
 if isTarg == 1
-    saveTarget(handles, drawing, colour, num);
+    saveTarget(drawing, colour, num);
 else
-    saveDistractor(handles, drawing, colour, num);
+    saveDistractor(drawing, colour, num);
 end
-%End Helpers
+%%--End Helpers--%%
+
+%%--Even More Helpers--%%
+function saveDrawingToFile(isTarg, num)
+global latestDFolder targCVec disCVec targCell disCell dim;
+if isTarg == 1
+    fileName = sprintf('t%s.pic', num2str(num));
+    drawing = targCell{num};
+    c = targCVec{num};
+else
+    fileName = sprintf('d%s.pic', num2str(num));
+    drawing = disCell{num};
+    c = disCVec{num};
+end
+
+file = fullfile(latestDFolder, fileName);
+fid = fopen(file, 'wt+');
+if isZeroMatrix(drawing) == 1
+    %blank drawing
+    fprintf(fid, '%d', -1);
+else
+    %The drawing is stored as a column vector of 0 and 1's
+    for i = 1:dim
+       %10 is the height of the targ
+       for j = 1:dim
+           %10 is the width of the targ
+          fprintf(fid, '%d\n', drawing(i, j)); 
+       end
+    end
+
+    for i = 1:3
+       fprintf(fid, '%f\n', c(i)); 
+    end 
+end
+fclose(fid);
+
+function saveAllDrawingsToFile()
+global NT ND;
+for i = 1:NT
+    saveDrawingToFile(1, i);
+end
+
+for i = 1:ND
+    saveDrawingToFile(0, i);
+end
+%%--End Even More Helpers--%%
 
 function p_Callback(hObject, eventdata, handles)
 % hObject    handle to p (see GCBO)
@@ -399,6 +491,7 @@ function previewButton_Callback(hObject, eventdata, handles)
 % hObject    handle to previewButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+saveAllDrawingsToFile();
 
 
 % --- Executes on button press in beginButton.
@@ -407,6 +500,7 @@ function beginButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 saveDataToFile(hObject, eventdata, handles);
+saveAllDrawingsToFile();
 
 
 % --- Executes on button press in clearButton.

@@ -68,12 +68,7 @@ ND = 6;
 
 nCopies = inputs{4};
 
-xTick = linspace(0, 1, dim+1);
-yTick = xTick;
-
-set(handles.td, 'XTick', xTick);
-set(handles.td, 'YTick', yTick);
-
+%Initialize the targest and the drawings
 emptyTarg = ones(dim, dim);
 emptyDistractor = ones(dim, dim);
 targCell = {emptyTarg};
