@@ -88,6 +88,8 @@ else
 end
 
 %Store the current drawing
+delete(get(handles.td, 'Children'));
+hold on;
 imHandle = displayTd(drawing, colour, handles.td);
 set(imHandle, 'HitTest', 'off');
 
@@ -136,7 +138,7 @@ end
 
 imHandle = displayTd(drawing, colour, hObject);
 set(imHandle, 'HitTest', 'off');
-saveDrawing(handles, drawing, colour);
+saveDrawing(drawing, colour);
 
 % --- Executes on button press in colourButton.
 function colourButton_Callback(hObject, eventdata, handles)
@@ -152,7 +154,7 @@ hold on;
 delete(get(handles.td, 'Children'));
 imHandle = displayTd(drawing, c, handles.td);
 set(imHandle, 'HitTest', 'off');
-saveDrawing(handles, drawing, c);
+saveDrawing(drawing, c);
 
 %Helper to clear
 function clearDrawing(handles)
@@ -296,7 +298,6 @@ end
 colour = B(Bindx+1:Bindx+3);
 saveDrawing(drawing, colour);
 
-drawing = flipdim(drawing, 1);
 imHandle = displayTd(drawing, colour, handles.td);
 set(imHandle, 'HitTest', 'off');
 
