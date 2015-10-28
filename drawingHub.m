@@ -70,9 +70,6 @@ function drawingHub_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to drawingHub (see VARARGIN)
 global latestDFolder latestData dataFolder inputs;
-global targCVec disCVec targCell disCell;
-global dim NT ND;
-global nCopies;
 
 setappdata(0, 'drawing', 0);
 
@@ -194,6 +191,10 @@ if ~exist(file, 'file')
     drawing = ones(dim, dim);
     c = [0, 0, 0];  %black by default
     saveDrawing(drawing, c, isTarg, num);
+    
+    delete(get(drawHandle, 'Children'));
+    imHandle = displayTd(drawing, c, drawHandle);
+    set(imHandle, 'HitTest', 'off');
     return;
 end
 
@@ -205,12 +206,15 @@ if numel(B) == 0 || B(1) == -1
     %Indicates a blank drawing, so load nothing and delete the
     %corresponding box
     fclose(fid);
-    delete(get(drawHandle, 'Children'));
     
     %Store empty targ to the appropriate drawings
     drawing = ones(dim, dim);
     c = [0, 0, 0];  %black by default
     saveDrawing(drawing, c, isTarg, num);
+    
+    delete(get(drawHandle, 'Children'));
+    imHandle = displayTd(drawing, c, drawHandle);
+    set(imHandle, 'HitTest', 'off');
     return;
 end
 
@@ -229,6 +233,7 @@ saveDrawing(drawing, colour, isTarg, num);
 
 %Plot the drawing
 drawing = flipdim(drawing, 1);
+delete(get(drawHandle, 'Children'));
 imHandle = displayTd(drawing, colour, drawHandle);
 set(imHandle, 'HitTest', 'off');
 
@@ -491,9 +496,20 @@ function beginButton_Callback(hObject, eventdata, handles)
 saveDataToFile(hObject, eventdata, handles);
 saveAllDrawingsToFile();
 
-%Start the test!
-close;
-figure(actualTest);
+choice = questdlg('Did you preview your drawings in the stimulus?', ...
+	'Begin Test Confirmation', ...
+	'Yes', ...
+    'No', ...
+    'No');
+
+switch choice
+    case 'Yes'
+        %Start the test!
+        close;
+        figure(actualTest);
+    case 'No'
+        return;
+end
 
 
 % --- Executes on button press in clearButton.
@@ -574,6 +590,7 @@ function dis2_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to dis2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+disp('Click on dis2!');
 spawnDrawBox(0, 2);
 
 
