@@ -51,10 +51,25 @@ function drawTd_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to drawTd (see VARARGIN)
+global latestDFolder;
+[folder, ~, ~] = fileparts(mfilename('fullpath'));
+if isdeployed
+    folder = pwd;
+end
+
+%The folder to store the latest drawings
+latestDFolder = fullfile(folder, 'SysFiles');
+if ~exist(latestDFolder, 'dir')
+   mkdir(latestDFolder); 
+end
+
+
+%Drawing parameters
 global isTarg num drawing colour;
 global targCell disCell targCVec disCVec;
 global dim;
 dim = 20;   %DO NOT CHANGE THIS!
+
 
 isTarg = getappdata(0, 'isTarg');
 num = getappdata(0, 'num');
@@ -104,6 +119,7 @@ function td_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to td (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+disp('td clicked!');
 global dim;
 drawing = get(hObject, 'UserData');
 colour = get(handles.colourButton, 'UserData');
@@ -162,7 +178,9 @@ clearDrawing(handles);
 %Helper Functions
 %Save the relevant target data
 function saveTarget(handles, targ, targColour, targNum)
-global targCVec targCell;
+global targCVec targCell drawing colour;
+drawing = targ;
+colour = targColour;
 set(handles.td, 'UserData', targ);
 set(handles.colourButton, 'UserData', targColour);
 targCVec{targNum} = targColour;
@@ -172,7 +190,9 @@ setappdata(0, 'tcCell', targCVec);
 
 %Save the relevant distractor data
 function saveDistractor(handles, dis, disColour, disNum)
-global disCVec disCell;
+global disCVec disCell drawing colour;
+drawing = dis;
+colour = disColour;
 set(handles.td, 'UserData', dis);
 set(handles.colourButton, 'UserData', disColour);
 disCVec{disNum} = disColour;
@@ -187,8 +207,36 @@ if isTarg == 1
 else
     saveDistractor(handles, drawing, colour, num);
 end
-%End Helper Functions
 
+function saveDrawingToFile()
+global isTarg num drawing colour latestDFolder dim;
+if isTarg == 1
+    fileName = sprintf('t%s.pic', num2str(num));
+else
+    fileName = sprintf('d%s.pic', num2str(num));
+end
+
+file = fullfile(latestDFolder, fileName);
+fid = fopen(file, 'wt+');
+if isZeroMatrix(drawing - ones(dim, dim)) == 1
+    %blank drawing
+    fprintf(fid, '%d', -1);
+else
+    %The drawing is stored as a column vector of 0 and 1's
+    for i = 1:dim
+       %10 is the height of the targ
+       for j = 1:dim
+           %10 is the width of the targ
+          fprintf(fid, '%d\n', drawing(i, j)); 
+       end
+    end
+
+    for i = 1:3
+       fprintf(fid, '%f\n', colour(i)); 
+    end 
+end
+fclose(fid);
+%End Helper Functions
 
 % --- Executes on button press in saveButton.
 function saveButton_Callback(hObject, eventdata, handles)
@@ -260,6 +308,7 @@ end
 colour = B(Bindx+1:Bindx+3);
 saveDrawing(handles, drawing, colour);
 
+drawing = flipdim(drawing, 1);
 imHandle = displayTd(drawing, colour, handles.td);
 set(imHandle, 'HitTest', 'off');
 
@@ -272,5 +321,6 @@ function doneButton_Callback(hObject, eventdata, handles)
 drawing = get(handles.td, 'UserData');
 colour = get(handles.colourButton, 'UserData');
 saveDrawing(handles, drawing, colour);
+saveDrawingToFile();
 close;
 figure(drawingHub);

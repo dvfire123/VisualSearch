@@ -204,7 +204,7 @@ end
 %Assuming either the targ/dis is already saved or -1 for blank targ/dis
 fid = fopen(file, 'r');
 B = fscanf(fid, '%f');
-if B(1) == -1
+if numel(B) == 0 || B(1) == -1
     %Indicates a blank drawing, so load nothing
     fclose(fid);
     
