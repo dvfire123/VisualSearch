@@ -51,6 +51,24 @@ function drawingHub_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to drawingHub (see VARARGIN)
+global latestDFolder inputs;
+
+[folder, ~, ~] = fileparts(mfilename('fullpath'));
+if isdeployed
+    folder = pwd;
+end
+
+%The folder to store the latest drawings
+latestDFolder = fullfile(folder, 'SysFiles');
+
+if ~exist(latestDFolder, 'dir')
+   mkdir(latestDFolder); 
+end
+
+%Load the user inputs
+inputs = getappdata(beginTest, 'inputs');
+set(beginTest, 'visible', 'off');
+loadInputs(handles, inputs);
 
 % Choose default command line output for drawingHub
 handles.output = hObject;
@@ -72,7 +90,67 @@ function varargout = drawingHub_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
+%%-----Helpers-----%%
+function readInputs(handles)
+global inputs;
 
+fn = get(handles.fn, 'string');
+ln = get(handles.ln, 'string');
+p = get(handles.p, 'string');
+nCopies = get(handles.nCopies, 'string');
+dt = get(handles.dt, 'string');
+numTrials = get(handles.numTrials, 'string');
+hSquish = get(handles.hs, 'string');
+wSquish = get(handles.ws, 'string');
+
+inputs{1} = fn;
+inputs{2} = ln;
+inputs{3} = p;
+inputs{4} = nCopies;
+inputs{5} = dt;
+inputs{6} = numTrials;
+inputs{7} = hSquish;
+inputs{8} = wSquish;
+
+setappdata(beginTest, 'inputs', inputs);
+set(beginTest, 'visible', 'off');
+
+function loadInputs(handles, inputs)
+set(handles.p, 'string', inputs{3});
+set(handles.nCopies, 'string', inputs{4});
+set(handles.dt, 'string', inputs{5});
+set(handles.numTrials, 'string', inputs{6});
+set(handles.hs, 'string', inputs{7});
+set(handles.ws, 'string', inputs{8});
+
+function updateLatestFile(file)
+global latestData;
+fid = fopen(latestData, 'wt+');
+fprintf(fid, '%s', file);
+fclose(fid);
+
+function saveDataToFile(hObject, eventdata, handles)
+global inputs dataFolder;
+readInputs(handles);
+[fileName, file]= saveInputsToFile(inputs, dataFolder);
+setappdata(beginTest, 'dataFileName', fileName);
+set(beginTest, 'visible', 'off');
+updateLatestFile(file);
+
+function loadDrawing(handles, isTarg, num)
+global latestDFolder;
+if isTarg == 1
+    fileName = sprintf('t%s.pic', num2str(num));
+    field = sprintf('targ%s', num2str(num));
+else
+    fileName = sprintf('d%s.pic', num2str(num));
+    field = sprintf('targ%s', num2str(num));
+end
+
+file = fullfile(latestDFolder, fileName);
+A = extractfield(handles, field)
+
+%End Helpers
 
 function p_Callback(hObject, eventdata, handles)
 % hObject    handle to p (see GCBO)
@@ -241,6 +319,7 @@ function beginButton_Callback(hObject, eventdata, handles)
 % hObject    handle to beginButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+saveDataToFile(hObject, eventdata, handles);
 
 
 % --- Executes on button press in clearButton.
