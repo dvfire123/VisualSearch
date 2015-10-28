@@ -21,7 +21,6 @@ function imageHandle = displayTd(td, colour, axesHandle)
     
     imageHandle = image(lim, lim, tdDisp, 'Parent', axesHandle);
     set(imageHandle, 'AlphaData', alpha);
-    colormap('default');
+    colormap(axesHandle, 'default');
     axis equal;
-
 end

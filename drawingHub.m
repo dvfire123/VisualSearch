@@ -22,7 +22,7 @@ function varargout = drawingHub(varargin)
 
 % Edit the above text to modify the response to help drawingHub
 
-% Last Modified by GUIDE v2.5 28-Oct-2015 14:40:24
+% Last Modified by GUIDE v2.5 28-Oct-2015 19:20:24
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -561,12 +561,76 @@ if isDrawing == 0
     figure(drawTd);
 end
 
+
+% --- Executes on button press in eDis1.
+function eDis1_Callback(hObject, eventdata, handles)
+% hObject    handle to eDis1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(0, 1);
+
+
+% --- Executes on button press in eDis2.
+function eDis2_Callback(hObject, eventdata, handles)
+% hObject    handle to eDis2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(0, 2);
+
+
+% --- Executes on button press in eDis3.
+function eDis3_Callback(hObject, eventdata, handles)
+% hObject    handle to eDis3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(0, 3);
+
+
+% --- Executes on button press in eDis4.
+function eDis4_Callback(hObject, eventdata, handles)
+% hObject    handle to eDis4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(0, 4);
+
+
+% --- Executes on button press in eDis5.
+function eDis5_Callback(hObject, eventdata, handles)
+% hObject    handle to eDis5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(0, 5);
+
+
+% --- Executes on button press in eDis6.
+function eDis6_Callback(hObject, eventdata, handles)
+% hObject    handle to eDis6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(0, 6);
+
+
+% --- Executes on button press in eTarg1.
+function eTarg1_Callback(hObject, eventdata, handles)
+% hObject    handle to eTarg1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(1, 1);
+
+
+% --- Executes on button press in eTarg2.
+function eTarg2_Callback(hObject, eventdata, handles)
+% hObject    handle to eTarg2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+spawnDrawBox(1, 2);
+
+%%Dummy Funcs
 % --- Executes on mouse press over axes background.
 function targ1_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to targ1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-spawnDrawBox(1, 1);
 
 
 % --- Executes on mouse press over axes background.
@@ -574,15 +638,12 @@ function targ2_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to targ2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-spawnDrawBox(1, 2);
-
 
 % --- Executes on mouse press over axes background.
 function dis1_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to dis1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-spawnDrawBox(0, 1);
 
 
 % --- Executes on mouse press over axes background.
@@ -590,8 +651,6 @@ function dis2_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to dis2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-disp('Click on dis2!');
-spawnDrawBox(0, 2);
 
 
 % --- Executes on mouse press over axes background.
@@ -599,7 +658,6 @@ function dis3_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to dis3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-spawnDrawBox(0, 3);
 
 
 % --- Executes on mouse press over axes background.
@@ -607,7 +665,6 @@ function dis4_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to dis4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-spawnDrawBox(0, 4);
 
 
 % --- Executes on mouse press over axes background.
@@ -615,7 +672,6 @@ function dis5_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to dis5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-spawnDrawBox(0, 5);
 
 
 % --- Executes on mouse press over axes background.
@@ -623,4 +679,3 @@ function dis6_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to dis6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-spawnDrawBox(0, 6);
