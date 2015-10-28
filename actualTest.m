@@ -281,10 +281,11 @@ crossHandle = crossStimulus(height, width, handles.stim);
 function showStim(handles)
 global targCVec disCVec targCell disCell;
 global sHeight sWidth minDist bgColour dim nCopies prob res;
+global FULL_HEIGHT FULL_WIDTH;
 
 axes(handles.stim);
 delete(get(handles.stim, 'Children'));
-res = createStimulus(sHeight, sWidth, dim, targCell, disCell,...
+res = createStimulus(FULL_HEIGHT, sHeight, FULL_WIDTH, sWidth, dim, targCell, disCell,...
         targCVec, disCVec, nCopies, prob, minDist, bgColour, handles.stim, 1);
     
 set(handles.stimulusLabel, 'string', 'Stimulus');
