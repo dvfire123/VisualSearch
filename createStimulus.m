@@ -43,7 +43,6 @@ function [res, totalTarg, totalDis] = createStimulus(fullHeight, sHeight, fullWi
     %first let's display the target(s)
     totalTarg = 0;
     totalDis = 0;
-    targCount = 0;
     res = 0;
     
     %Count how many targets are there
@@ -54,7 +53,7 @@ function [res, totalTarg, totalDis] = createStimulus(fullHeight, sHeight, fullWi
        end
     end
     
-    if targCount == 1
+    if totalTarg == 1
         p = q;
     else
         p = 1-sqrt(1-q);
