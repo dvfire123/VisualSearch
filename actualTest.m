@@ -67,7 +67,7 @@ ND = 6;
 FULL_HEIGHT = 400;
 FULL_WIDTH = 600;
 bgColour = [1 1 1]; %white
-minDist = ceil(dim/4);
+minDist = ceil(dim/8);
 %End Note
 
 %Load parameters

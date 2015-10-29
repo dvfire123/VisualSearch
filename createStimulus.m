@@ -19,7 +19,7 @@ function [res, totalTarg, totalDis] = createStimulus(fullHeight, sHeight, fullWi
     %axHandle: the axes handle in which to place the stimulus
     
     %RETURNS: whether target 1/2 are in the drawing or not
-    MAX_TRIES = 500;
+    MAX_TRIES = 1000;
     
     [~, numTarg] = size(targCell);
     [~, numDis] = size(disCell);
@@ -92,8 +92,8 @@ function [res, totalTarg, totalDis] = createStimulus(fullHeight, sHeight, fullWi
                  break;
              end
              %Selected spot no good; keep searching
-             top = ceil(rand*insertRangeHeight);
-             left = ceil(rand*insertRangeWidth);
+             top = ceil(rand*insertRangeHeight + floor((fullHeight - sHeight)/2));
+          left = ceil(rand*insertRangeWidth + floor((fullWidth - sWidth)/2));
           end
           
           if found == 1
@@ -146,8 +146,8 @@ function [res, totalTarg, totalDis] = createStimulus(fullHeight, sHeight, fullWi
                  end
                  
                  %Selected spot no good; keep searching
-                 top = ceil(rand*insertRangeHeight);
-                 left = ceil(rand*insertRangeWidth);
+                 top = ceil(rand*insertRangeHeight + floor((fullHeight - sHeight)/2));
+                 left = ceil(rand*insertRangeWidth + floor((fullWidth - sWidth)/2));
             end
 
             if found == 1
