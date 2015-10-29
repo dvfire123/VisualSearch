@@ -60,7 +60,7 @@ dim = 20;
 FULL_HEIGHT = 400;
 FULL_WIDTH = 600;
 bgColour = [1 1 1]; %white
-minDist = ceil(dim/8);
+minDist = 1;
 %end note
 
 inputs = getappdata(0, 'inputs');
