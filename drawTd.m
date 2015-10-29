@@ -156,11 +156,17 @@ imHandle = displayTd(drawing, c, handles.td);
 set(imHandle, 'HitTest', 'off');
 saveDrawing(drawing, c);
 
+
 %Helper to clear
 function clearDrawing(handles)
-global dim drawing;
+global dim drawing colour;
 axes(handles.td);
 drawing = ones(dim, dim);
+delete(get(handles.td, 'Children'));
+hold on;
+imHandle = displayTd(drawing, colour, handles.td);
+set(imHandle, 'HitTest', 'off');
+saveDrawing(drawing, colour);
 
 % --- Executes on button press in clearButton.
 function clearButton_Callback(hObject, eventdata, handles)
@@ -234,7 +240,7 @@ function saveButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 %sdt stands for signal detection target
-global dim;
+global dim drawing colour;
 [FileName, pathname] = uiputfile('*.pic', 'Saving your drawing');
 
 %If the dialog box is cancelled
@@ -245,8 +251,6 @@ end
 file = fullfile(pathname, FileName);
 
 fid = fopen(file, 'wt+');
-drawing = get(handles.td, 'UserData');
-colour = get(handles.colourButton, 'UserData');
 
 %The target is stored as a column vector of 0 and 1's
 for i = 1:dim
