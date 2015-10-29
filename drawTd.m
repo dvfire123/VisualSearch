@@ -22,7 +22,7 @@ function varargout = drawTd(varargin)
 
 % Edit the above text to modify the response to help drawTd
 
-% Last Modified by GUIDE v2.5 20-Oct-2015 20:05:46
+% Last Modified by GUIDE v2.5 28-Oct-2015 20:32:56
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -90,8 +90,7 @@ end
 %Store the current drawing
 delete(get(handles.td, 'Children'));
 hold on;
-imHandle = displayTd(drawing, colour, handles.td);
-set(imHandle, 'HitTest', 'off');
+displayTd(drawing, colour, handles.td);
 
 % Choose default command line output for drawTd
 handles.output = hObject;
@@ -138,7 +137,6 @@ end
 
 imHandle = displayTd(drawing, colour, hObject);
 set(imHandle, 'HitTest', 'off');
-saveDrawing(drawing, colour);
 
 % --- Executes on button press in colourButton.
 function colourButton_Callback(hObject, eventdata, handles)
@@ -152,10 +150,7 @@ axes(handles.td);
 
 hold on;
 delete(get(handles.td, 'Children'));
-imHandle = displayTd(drawing, c, handles.td);
-set(imHandle, 'HitTest', 'off');
-saveDrawing(drawing, c);
-
+displayTd(drawing, c, handles.td);
 
 %Helper to clear
 function clearDrawing(handles)
@@ -316,3 +311,23 @@ saveDrawing(drawing, colour);
 saveDrawingToFile();
 close;
 figure(drawingHub);
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: delete(hObject) closes the figure
+setappdata(0, 'drawing', 0);
+delete(hObject);
+
+
+% --- Executes on button press in cancelButton.
+function cancelButton_Callback(hObject, eventdata, handles)
+% hObject    handle to cancelButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+setappdata(0, 'drawing', 0);
+close;
