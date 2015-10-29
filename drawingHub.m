@@ -173,14 +173,31 @@ function loadDrawing(handles, isTarg, num)
 global latestDFolder dim;
 if isTarg == 1
     fileName = sprintf('t%s.pic', num2str(num));
-    field = sprintf('targ%s', num2str(num));
+    switch num
+        case 1
+            drawHandle = handles.targ1;
+        otherwise
+            drawHandle = handles.targ2;
+    end
 else
     fileName = sprintf('d%s.pic', num2str(num));
-    field = sprintf('dis%s', num2str(num));
+    switch num
+        case 1
+            drawHandle = handles.dis1;
+        case 2
+            drawHandle = handles.dis2;
+        case 3
+            drawHandle = handles.dis3;
+        case 4
+            drawHandle = handles.dis4;
+        case 5
+            drawHandle = handles.dis5;
+        otherwise
+            drawHandle = handles.dis6;
+    end
 end
 
 file = fullfile(latestDFolder, fileName);
-drawHandle = extractfield(handles, field);
 
 if ~exist(file, 'file')
     %Create the file
