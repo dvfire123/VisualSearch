@@ -157,7 +157,8 @@ axes(handles.td);
 
 hold on;
 delete(get(handles.td, 'Children'));
-displayTd(drawing, c, handles.td);
+im = displayTd(drawing, c, handles.td);
+set(im, 'HitTest', 'off');
 
 %Helper to clear
 function clearDrawing(handles)
