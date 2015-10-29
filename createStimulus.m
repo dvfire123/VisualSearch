@@ -19,7 +19,7 @@ function [res, totalTarg, totalDis] = createStimulus(fullHeight, sHeight, fullWi
     %axHandle: the axes handle in which to place the stimulus
     
     %RETURNS: whether target 1/2 are in the drawing or not
-    MAX_TRIES = 1000;
+    MAX_TRIES = 500;
     
     [~, numTarg] = size(targCell);
     [~, numDis] = size(disCell);
@@ -53,12 +53,22 @@ function [res, totalTarg, totalDis] = createStimulus(fullHeight, sHeight, fullWi
        end
     end
     
+    %Count how many distractors are there
+    for i = 1:numDis
+        dis = disCell{i};
+        if isZeroMatrix(dis - ones(dim, dim)) == 0
+           totalDis = totalDis + 1;
+       end
+    end
+    
+    %Dynamically adjusts target presence
     if totalTarg == 1
         p = q;
     else
         p = 1-sqrt(1-q);
     end
     
+    %Draw the things
     for targCount = 1:numTarg
        targ = targCell{targCount};
        
@@ -108,18 +118,17 @@ function [res, totalTarg, totalDis] = createStimulus(fullHeight, sHeight, fullWi
     end
     
     %Next let's display the distractors:
-    for n = 1:numDis
-        dis = disCell{n};
+    for k = 1:nCopies
+        for n = 1:numDis
+            dis = disCell{n};
         
-        if isZeroMatrix(dis - ones(dim, dim)) == 1
-           %blank drawing is ignored
-           continue;
-        end
-        
-        c = disC{n};
-        totalDis = totalDis + 1;
-        
-        for k = 1:nCopies
+            if isZeroMatrix(dis - ones(dim, dim)) == 1
+               %blank drawing is ignored
+               continue;
+            end
+
+            c = disC{n};
+            
             %We first need to randomly rotate each of the distractors
             if rand < 0.5
                 dis = flipdim(dis, 1);

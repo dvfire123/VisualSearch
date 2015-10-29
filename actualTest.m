@@ -141,13 +141,13 @@ fprintf(fid, 'Actual stimulus width (no. of dots) %d\n', sWidth);
 fprintf(fid, 'Percent of full height used %f\n', hs);
 fprintf(fid, 'Percent of full width used %f\n', ws);
 
-fprintf(fid, 'Number of Targets %d\n', numTarg);
-fprintf(fid, 'Number of Distractors %d\n', numDis);
+fprintf(fid, 'Number of targets %d\n', numTarg);
+fprintf(fid, 'Number of distractors %d\n', numDis);
 fprintf(fid, 'Target/Distractor dots per dimension %d\n', dim);
-fprintf(fid, 'Probability of target presence %f\n', prob);
+fprintf(fid, 'Probability of at least one target present %f\n', prob);
 fprintf(fid, 'Number of copies of each distractor %d\n', nCopies);
 fprintf(fid, 'Number of trials %d\n', numTrials);
-fprintf(fid, 'Display Time for each stimulus %f sec\n', dispTime);
+fprintf(fid, 'Maximum display time for each stimulus %f sec\n', dispTime);
 fprintf(fid, '\n');
 fclose(fid);
 
