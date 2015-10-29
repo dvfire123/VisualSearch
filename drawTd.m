@@ -22,7 +22,7 @@ function varargout = drawTd(varargin)
 
 % Edit the above text to modify the response to help drawTd
 
-% Last Modified by GUIDE v2.5 28-Oct-2015 20:32:56
+% Last Modified by GUIDE v2.5 28-Oct-2015 20:44:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -87,10 +87,17 @@ else
     colour = disCVec{num};
 end
 
+xTick = linspace(0, 1, dim+1);
+yTick = xTick;
+
+set(handles.td, 'XTick', xTick);
+set(handles.td, 'YTick', yTick);
+
 %Store the current drawing
 delete(get(handles.td, 'Children'));
 hold on;
-displayTd(drawing, colour, handles.td);
+imHandle = displayTd(drawing, colour, handles.td);
+set(imHandle, 'HitTest', 'off');
 
 % Choose default command line output for drawTd
 handles.output = hObject;
@@ -161,7 +168,7 @@ delete(get(handles.td, 'Children'));
 hold on;
 imHandle = displayTd(drawing, colour, handles.td);
 set(imHandle, 'HitTest', 'off');
-saveDrawing(drawing, colour);
+
 
 % --- Executes on button press in clearButton.
 function clearButton_Callback(hObject, eventdata, handles)
